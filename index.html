@@ -77,6 +77,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 /* TrendCatcher-Kech logo slot */
 .logoSlot{display:inline-flex;flex:none;line-height:0}
 .logoSlot svg{display:block;border-radius:11px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+[data-theme="dark"] .logoSlot svg,[data-theme="grey"] .logoSlot svg{box-shadow:0 2px 12px rgba(0,0,0,.5)}
 
 /* seal */
 .seal .disc{fill:var(--card)}
@@ -1044,7 +1045,7 @@ function readFiles(fileList,cb){
     r.onerror=()=>{if(++done===arr.length)cb(out);};r.readAsDataURL(f);
   });
 }
-function logoSVG(size){size=size||34;return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tckg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0C6E48"/><stop offset="1" stop-color="#0E7C76"/></linearGradient><linearGradient id="tckt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9A24B"/><stop offset="1" stop-color="#8A5A22"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#tckg)"/><g fill="none" stroke="#1E5C3A" stroke-opacity=".35" stroke-width="1"><path d="M8 40h32"/></g><path d="M22.5 41c-.4-7-1-14-2.3-19.5" fill="none" stroke="url(#tckt)" stroke-width="3" stroke-linecap="round"/><path d="M24 41c.4-7 1-14 2.3-19.5" fill="none" stroke="url(#tckt)" stroke-width="2.4" stroke-linecap="round"/><g fill="none" stroke="#2FB86A" stroke-width="2.4" stroke-linecap="round"><path d="M23 20C18 16 12 15 8 17c4 .2 8 1.6 12 4.4"/><path d="M23 20C28 16 34 15 38 17c-4 .2-8 1.6-12 4.4"/><path d="M23 19.5C20 13.5 15 10 10 9.5c3.5 2 7 6 10 10.6"/><path d="M23 19.5C26 13.5 31 10 36 9.5c-3.5 2-7 6-10 10.6"/><path d="M23 19c0-4.5 1.5-8.5 0.6-12.5C22 11 22 15 23 19z"/></g><g fill="#F4D58D"><circle cx="22" cy="13" r="1.5"/><circle cx="25.5" cy="13.5" r="1.5"/><circle cx="20.5" cy="16" r="1.4"/><circle cx="27" cy="16.5" r="1.4"/><circle cx="23.5" cy="15" r="1.4"/></g><circle cx="14" cy="20" r="1.4" fill="#FFB454"/><circle cx="33" cy="20" r="1.4" fill="#FFB454"/></svg>`;}
+function logoSVG(size){size=size||34;var u="lg"+Math.random().toString(36).slice(2,8);return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pak Lawyer's AI-Notebook"><defs><linearGradient id="${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#119C7A"/><stop offset="1" stop-color="#0A5536"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#${u})"/><rect x="3.4" y="3.4" width="41.2" height="41.2" rx="10.4" fill="none" stroke="#F4D58D" stroke-opacity=".9" stroke-width="1.3"/><path d="M12 33 q12 -4.6 24 0 v3.5 q-12 -4.6 -24 0 z" fill="#F4D58D"/><g stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="24" y1="11.5" x2="24" y2="30.5"/><line x1="14.5" y1="16.5" x2="33.5" y2="16.5"/><line x1="14.5" y1="16.5" x2="10.6" y2="23.4"/><line x1="14.5" y1="16.5" x2="18.4" y2="23.4"/><path d="M10.6 23.4 a3.9 3.9 0 0 0 7.8 0"/><line x1="33.5" y1="16.5" x2="29.6" y2="23.4"/><line x1="33.5" y1="16.5" x2="37.4" y2="23.4"/><path d="M29.6 23.4 a3.9 3.9 0 0 0 7.8 0"/></g><circle cx="24" cy="10" r="2.1" fill="#FFFFFF"/></svg>`;}
 function fillLogos(){document.querySelectorAll('.logoSlot').forEach(el=>{if(!el.dataset.done){el.innerHTML=logoSVG(+el.dataset.size||34);el.dataset.done="1";}});}
 
 const DB={
@@ -1058,12 +1059,12 @@ const DB={
   get(k,def){try{const v=localStorage.getItem(DB.key(k));return v?JSON.parse(v):def}catch(e){return def}},
   set(k,v){try{localStorage.setItem(DB.key(k),JSON.stringify(v));schedulePush();return true}catch(e){toast("Storage full — remove some attachments or back up & clear");return false}}
 };
-let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],clients:[],bench:[],aikey:null,calMonth:new Date()};
+let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],clients:[],bench:[],fir:[],aikey:null,calMonth:new Date()};
 
 function supaCfg(){try{const c=JSON.parse(localStorage.getItem("wakalat.supa")||"null");if(c&&c.url&&c.key)return c;}catch(e){}return (SUPA.url&&SUPA.key)?SUPA:null;}
 function supaHeaders(c){return{apikey:c.key,Authorization:"Bearer "+c.key,"Content-Type":"application/json"};}
 function setSyncStatus(t){const e=$("supaStatus");if(e)e.textContent=t;}
-function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench};}
+function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir};}
 let _pushT;
 function schedulePush(){const c=supaCfg();if(!c||!state.email)return;clearTimeout(_pushT);_pushT=setTimeout(cloudPush,1500);}
 async function cloudPush(){const c=supaCfg();if(!c||!state.email)return false;try{
@@ -1076,7 +1077,7 @@ async function cloudFetch(email){const c=supaCfg();if(!c||!email)return null;try
   const r=await fetch(`${c.url}/rest/v1/vault?email=eq.${encodeURIComponent(email)}&select=account,data`,{headers:supaHeaders(c)});
   if(!r.ok)return null;const rows=await r.json();return rows[0]||null;
 }catch(e){return null;}}
-function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal","clients","bench"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
+function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
 async function cloudPullApply(){const row=await cloudFetch(state.email);if(row&&row.data){applyData(row.data);if($("appShell")&&!$("appShell").classList.contains("hidden"))renderAll();return true;}return false;}
 
 function sealSVG(withText){
@@ -1166,7 +1167,7 @@ function renderAdminReqs(){
 function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`;return btoa(base).replace(/=/g,"")+"."+hash32(base+ACTIVATION_SECRET);}
 function verifyUnlock(token,ref){try{const[b64,sig]=token.trim().split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
 
-function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.clients=DB.get("clients",[]);state.bench=DB.get("bench",[]);state.aikey=DB.get("aikey",null);}
+function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.clients=DB.get("clients",[]);state.bench=DB.get("bench",[]);state.fir=DB.get("fir",[]);state.aikey=DB.get("aikey",null);}
 function isAdmin(){return state.email===ADMIN_EMAIL;}
 function subActive(){return isAdmin()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
 function canSave(){return subActive();}
@@ -1203,7 +1204,7 @@ function enterApp(){
   if(supaCfg()&&!sessionStorage.getItem("pulled")){sessionStorage.setItem("pulled","1");cloudPullApply().then(ok=>{if(ok)toast("Loaded your latest data from cloud");});}
 }
 function renderAll(){renderAlerts();renderCases("client");renderJudge();renderCalendar();renderSettings();renderHome();if(window.renderBench)renderBench();}
-const VIEWS=["vHome","vAlerts","vClient","vClients","vJudge","vAI","vSearch","vCal","vNews","vLive","vLearn","vMedia","vHelp","vPolicy","vSettings"];
+const VIEWS=["vHome","vAlerts","vClient","vClients","vJudge","vAI","vSearch","vCal","vNews","vLive","vLearn","vMedia","vHelp","vPolicy","vSettings"];window.VIEWS=VIEWS;
 function setView(v){
   document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("on",x.dataset.view===v));
   VIEWS.forEach(id=>{const el=$(id);if(el)el.classList.toggle("on",id===v);});
@@ -1598,9 +1599,9 @@ function renderSettings(){
 $("aiSave").onclick=()=>{const k=$("aiKey").value.trim();state.aikey=k||null;DB.set("aikey",state.aikey);toast(k?"Gemini key saved":"Key cleared");};
 $("aiClear").onclick=()=>{$("aiKey").value="";state.aikey=null;DB.set("aikey",null);toast("Key removed");};
 $("editProfile").onclick=()=>{openProfile();showOnly("profileScreen");};
-$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
+$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
 $("importBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 $("signoutBtn").onclick=signOut;
 $("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","reminders","personal","clients","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
 $("subscribeBtn").onclick=openSub;
@@ -1859,7 +1860,7 @@ function filterActive(){go("vClient");$("clientFilter").value="Active";renderCas
 window.filterActive=filterActive;
 $("homeBackup").onclick=()=>$("exportData").click();
 $("homeRestore").onclick=()=>$("homeRestoreFile").click();
-$("homeRestoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});enterApp();toast("Data restored on this device");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("homeRestoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});enterApp();toast("Data restored on this device");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 
 function findRec(kind,id){
   if(kind==="judge")return state.judge.find(j=>j.id===id);
@@ -2004,7 +2005,8 @@ $("clientsSearch").addEventListener("input",renderClients);
     return GROUPS.map(G=>`<div class="fir-grp"><h4>${G.ic} ${esc(G.g)}</h4><div class="fir-fgrid">${G.f.map(x=>fieldHTML(x[0],x[1],x[2])).join("")}</div></div>`).join("");
   }
   sec.innerHTML=`
-  <div class="page-head"><div><h2>FIR / pre-hearing analysis</h2><div class="sub">Paste or extract an FIR, challan or order. AI fills every field below, then scores the case — health, eligibility, delay, jurisdiction, charge-match, weaknesses, defence vs prosecution points and a step-by-step plan for the next hearing.</div></div></div>
+  <div class="page-head"><div><h2>FIR records &amp; analysis</h2><div class="sub">Create an FIR record — paste/extract the FIR (AI fills every field) or fill by hand, then score it: health, eligibility, delay, jurisdiction, charge-match, weaknesses and a hearing plan. Save it to revisit anytime.</div></div><button class="btn primary" id="firNew">＋ New FIR</button></div>
+  <div class="cases" id="firList" style="margin-bottom:16px"></div>
   <div class="fir-tools">
     <div class="field" style="margin:0"><label>Document text</label><textarea id="firSrc" style="min-height:110px" placeholder="Paste the FIR / charge-sheet / order text…"></textarea></div>
     <div style="margin-top:8px"><input id="firFile" type="file" accept="application/pdf,image/*,.docx"></div>
@@ -2019,7 +2021,8 @@ $("clientsSearch").addEventListener("input",renderClients);
   <div id="firForm">${groupsHTML()}</div>
   <div id="firOut" style="margin-top:8px"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 30px">
-    <button class="btn primary" id="firSaveCase" type="button">＋ Save as case</button>
+    <button class="btn primary" id="firSave" type="button">💾 Save FIR record</button>
+    <button class="btn" id="firSaveCase" type="button">＋ Also save as case</button>
   </div>`;
 
   function bindForm(){
@@ -2155,10 +2158,42 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
     },140);
   }
 
+  let editId="";
+  function renderList(){
+    const box=document.getElementById("firList"); if(!box)return;
+    const rows=state.fir||[];
+    if(!rows.length){box.innerHTML="";return;}
+    box.innerHTML=rows.map(r=>{
+      const title=r.title||((r.complainant?r.complainant+" — ":"")+(r.sections||r.offence||r.firNo||"FIR"));
+      const sc=r.analysis?((r.analysis.hearingReadiness&&r.analysis.hearingReadiness.score!=null)?r.analysis.hearingReadiness.score:r.analysis.healthScore):null;
+      return `<div class="case"><div class="top"><div class="name">${esc(title)}</div>${sc!=null?`<span class="st ${sc>=70?'active':sc>=45?'hold':'complete'}">${sc}%</span>`:''}</div>
+        <div class="meta">${r.firNo?`<span>📄 FIR ${esc(r.firNo)}</span>`:''}${r.policeStation?`<span>🏛 ${esc(r.policeStation)}</span>`:''}${r.sections?`<span>⚖︎ ${esc(r.sections)}</span>`:''}${r.firDate?`<span>🗓 ${esc(r.firDate)}</span>`:''}</div>
+        <div class="acts"><button class="btn sm primary" onclick="firOpen('${r.id}')">Open</button><button class="btn sm" onclick="firDelete('${r.id}')" style="color:var(--red)">Delete</button></div></div>`;
+    }).join("");
+  }
+  function loadRec(r){data=Object.assign({},r);delete data.id;delete data.analysis;delete data.savedAt;delete data.src;delete data.title;editId=r.id||"";analysis=r.analysis||null;lastSrc=r.src||"";paintForm();if($("firSrc"))$("firSrc").value=r.src||"";if(analysis)renderDash(analysis);else $("firOut").innerHTML="";window.scrollTo(0,0);toast("Loaded — edit & save, or re-analyse");}
+  function saveRec(){
+    if(typeof canSave==="function" && !canSave()){if(typeof openSub==="function")openSub();return;}
+    if(!ALLF.some(k=>data[k])){toast("Fill or AI-extract the FIR fields first");return;}
+    const title=(data.complainant?data.complainant+" — ":"")+(data.sections||data.offence||data.firNo||"FIR matter");
+    const obj=Object.assign({},data,{id:editId||("f"+Date.now()),title,analysis,src:($("firSrc").value||"").trim(),savedAt:new Date().toISOString()});
+    state.fir=state.fir||[];const i=state.fir.findIndex(x=>x.id===obj.id);
+    if(i>=0)state.fir[i]=obj;else state.fir.unshift(obj);
+    editId=obj.id;
+    if(DB.set("fir",state.fir)){renderList();toast("FIR record saved");}
+  }
+  function newRec(){editId="";data={};analysis=null;lastSrc="";paintForm();if($("firSrc"))$("firSrc").value="";$("firOut").innerHTML="";window.scrollTo(0,0);toast("New FIR — paste/extract or fill by hand");}
+  window.firOpen=id=>{const r=(state.fir||[]).find(x=>x.id===id);if(r)loadRec(r);};
+  window.firDelete=id=>{if(!confirm("Delete this FIR record?"))return;state.fir=(state.fir||[]).filter(x=>x.id!==id);DB.set("fir",state.fir);renderList();toast("Deleted");};
+
   /* ---- wire ---- */
   $("firFill").onclick=async function(){this.disabled=true;const o=this.textContent;this.textContent="Reading…";try{await fill();}catch(e){toast("AI error: "+(e.message||""));}this.disabled=false;this.textContent=o;};
   $("firRun").onclick=async function(){this.disabled=true;const o=this.textContent;this.textContent="Analysing…";await run();this.disabled=false;this.textContent=o;};
   $("firSaveCase").onclick=saveCase;
+  $("firNew").onclick=newRec;
+  $("firSave").onclick=saveRec;
+  renderList();
+  document.addEventListener("click",e=>{if(e.target.closest('button[data-view="vFir"]'))setTimeout(renderList,30);});
   $("firClear").onclick=()=>{data={};analysis=null;lastSrc="";paintForm();$("firSrc").value="";$("firOut").innerHTML="";toast("Cleared");};
   $("firExtract").onclick=async function(){const f=$("firFile").files[0];if(!f){toast("Choose a file");return;}this.disabled=true;const o=this.textContent;this.textContent="Extracting…";try{const t=await extractFileText(f,s=>this.textContent=s);if(t){const cur=$("firSrc").value.trim();$("firSrc").value=cur?cur+"\n\n"+t:t;toast("Text extracted — tap AI: read & fill");}else toast("No text found");}catch(e){toast("Extract failed");}this.disabled=false;this.textContent=o;};
   if(state.aikey)$("firHint").textContent="AI ready — paste/extract a document then tap “AI: read & fill”, or fill by hand and Analyse.";
@@ -2175,12 +2210,15 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
     if(window.VIEWS&&VIEWS.indexOf("vBench")<0)VIEWS.push("vBench"); }
 
   const GROUPS=[
-    {g:"Judge — basic profile",ic:"👨‍⚖️",f:[["name","Judge's name"],["designation","Designation (e.g. District & Sessions Judge)"],["court","Court / bench"],["posting","Posting here since"],["background","Education / background"],["temperament","Temperament / reputation"],["contact","Reader / PA / contact"]]},
+    {g:"Judge — basic profile",ic:"👨‍⚖️",f:[["name","Judge's name"],["designation","Designation (e.g. District & Sessions Judge)"],["court","Court / bench"],["posting","Posting here since"],["contact","Reader / PA / contact"]]},
+    {g:"Biodata & career",ic:"🪪",f:[["dob","Date of birth / age"],["hometown","Hometown / province"],["background","Education / qualifications"],["career","Career history / previous postings"],["seniority","Years on the bench / seniority"],["specialization","Known specialization (criminal/civil/family…)"]]},
+    {g:"Reputation & track record",ic:"⭐",f:[["reputation","General reputation"],["decisionTrend","Trend of previous judgments (convicts/acquits, pro-bail, strict on delay…)"],["landmark","Notable / landmark decisions"],["strictness","Strictness vs leniency"],["reversalRate","Appeals / reversal tendency"]]},
+    {g:"Nature, conduct & rapport",ic:"🤝",f:[["temperament","Temperament / demeanour"],["nature","Behaviour in courtroom"],["punctuality","Punctuality / time discipline"],["rapportLawyers","Rapport with lawyers / bar"],["rapportProsecution","Rapport with prosecution / state"],["rapportVictim","Attitude to victims / complainants"],["rapportAccused","Attitude to accused"],["biasNote","Perceived bias / sensitivities"]]},
     {g:"This case & the judge",ic:"🎯",f:[["caseRef","Related case (name / no.)"],["perspective","Judge's likely perspective on this case"],["priorRemarks","Previous remarks (hearing-wise)"],["observations","What you observed about the judge (across hearings)"],["leaning","Apparent leaning (for / neutral / against)"],["strategy","Your plan / strategy before this judge"]]},
     {g:"Opposite party & investigation",ic:"⚔",f:[["opposingParty","Opposing party"],["opposingCounsel","Opposing counsel"],["theirTheory","Their case theory"],["theirStrengths","Their strengths"],["theirWeaknesses","Their weaknesses"],["io","Investigating officer (IO)"],["investigationStatus","Investigation status"],["theirEvidence","Evidence they rely on"],["investigationGaps","Gaps / lapses in investigation"]]}
   ];
   const ALLF=[]; GROUPS.forEach(G=>G.f.forEach(x=>ALLF.push(x[0])));
-  const LONG=new Set(["perspective","priorRemarks","observations","strategy","theirTheory","theirStrengths","theirWeaknesses","theirEvidence","investigationGaps","background","temperament"]);
+  const LONG=new Set(["perspective","priorRemarks","observations","strategy","theirTheory","theirStrengths","theirWeaknesses","theirEvidence","investigationGaps","background","temperament","reputation","decisionTrend","landmark","nature","career","rapportLawyers","rapportProsecution","rapportVictim","rapportAccused","biasNote"]);
 
   const css=document.createElement("style");
   css.textContent=`
@@ -2296,7 +2334,7 @@ ${src.slice(0,12000)}`;
       const lean=c.leaning?`<span class="lean ${leanClass(c.leaning)}">${esc(c.leaning)}</span>`:"";
       const blocks=[];
       if(c.perspective)blocks.push(`<div class="next">🎯 ${esc(c.perspective)}</div>`);
-      if(c.priorRemarks)blocks.push(`<div class="rem">🗣 ${esc(c.priorRemarks)}</div>`);
+      if(c.priorRemarks)blocks.push(`<div class="rem">🗣 ${esc(c.priorRemarks)}</div>`);if(c.decisionTrend)blocks.push(`<div class="rem">📊 ${esc(c.decisionTrend)}</div>`);if(c.reputation)blocks.push(`<div class="rem">⭐ ${esc(c.reputation)}</div>`);
       if(c.strategy)blocks.push(`<div class="next">♟ ${esc(c.strategy)}</div>`);
       if(c.opposingParty||c.opposingCounsel)blocks.push(`<div class="meta"><span>⚔ ${esc(c.opposingParty||"")}${c.opposingCounsel?" · "+esc(c.opposingCounsel):""}</span></div>`);
       if(c.investigationGaps)blocks.push(`<div class="rem">🔍 Gaps: ${esc(c.investigationGaps)}</div>`);
