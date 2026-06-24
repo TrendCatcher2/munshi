@@ -404,6 +404,12 @@ details.help a{color:var(--brass)}
 #cAiHint,#pAiHint,#aiAskHint,#jAiHint{color:#1C7A52;font-weight:600}
 [data-theme="dark"] #cAiHint,[data-theme="dark"] #pAiHint,[data-theme="dark"] #aiAskHint,[data-theme="dark"] #jAiHint{color:#7FE3B4}
 #aiAnswer .hint{display:block;color:var(--brass);font-weight:600}
+.home-cta{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,var(--green-deep),var(--teal));color:#F2EEE3;border-radius:var(--r);padding:16px 18px;margin-bottom:18px;box-shadow:var(--shadow)}
+.home-cta .hc-ic{font-size:30px;flex:none}
+.home-cta .hc-tx{flex:1;min-width:0}.home-cta .hc-tx b{font-family:'Marcellus',serif;font-size:17px;display:block;margin-bottom:2px}
+.home-cta .hc-tx div{font-size:12.5px;opacity:.95;line-height:1.45}
+.home-cta .btn.primary{flex:none;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45);color:#fff;box-shadow:none}
+@media(max-width:640px){.home-cta{flex-wrap:wrap}.home-cta .btn{width:100%}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
@@ -526,6 +532,7 @@ details.help a{color:var(--brass)}
 
   <nav class="primnav" id="topNav">
     <button class="on" data-view="vHome">🏠 Home</button>
+    <button data-view="vAI">✨ AI</button>
     <button data-view="vFir">🩺 FIR</button>
     <button data-view="vAlerts">⚖︎ Hearings <span class="pill hidden" id="alertPill">0</span></button>
     <button data-view="vClient">👤 Cases</button>
@@ -542,6 +549,9 @@ details.help a{color:var(--brass)}
       <div class="nav-group">AI &amp; planning</div>
       <button data-view="vAI">✨ AI assistant</button>
       <button data-view="vCal">🗓 Calendar</button>
+      <div class="nav-group">Profiles &amp; intel</div>
+      <button data-view="vAccused">🚔 Accused</button>
+      <button data-view="vLawyers">💼 Lawyers</button>
       <div class="nav-group">Explore &amp; learn</div>
       <button data-view="vNews">📰 Legal news</button>
       <button data-view="vLive">🛰 Live &amp; community</button>
@@ -558,6 +568,7 @@ details.help a{color:var(--brass)}
     <main>
     <section class="view on" id="vHome">
       <div class="page-head"><div><h2 id="homeHi">Welcome</h2><div class="sub">Your whole practice at a glance. Tap any tile to jump in.</div></div></div>
+      <div class="home-cta"><div class="hc-ic">✨</div><div class="hc-tx"><b>Start here — let AI do the work</b><div>Open the AI assistant, describe anything (a case, FIR, judge, accused or opposing lawyer) and it drafts the record for you. Review it, then save where you choose.</div></div><button class="btn primary" onclick="go('vAI')">Open AI ›</button></div>
       <div class="stats" id="homeStats"></div>
       <div class="sec-head"><span class="ic" style="background:var(--teal)">✨</span><div><h3>Create</h3><div class="sline">Pick what to make — AI can fill it for you, or do it by hand.</div></div></div>
       <div class="tiles" id="homeCreate">
@@ -1059,12 +1070,12 @@ const DB={
   get(k,def){try{const v=localStorage.getItem(DB.key(k));return v?JSON.parse(v):def}catch(e){return def}},
   set(k,v){try{localStorage.setItem(DB.key(k),JSON.stringify(v));schedulePush();return true}catch(e){toast("Storage full — remove some attachments or back up & clear");return false}}
 };
-let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],clients:[],bench:[],fir:[],aikey:null,calMonth:new Date()};
+let state={email:null,profile:null,sub:null,mine:[],client:[],judge:[],reminders:[],personal:[],clients:[],bench:[],fir:[],accused:[],lawyers:[],aikey:null,calMonth:new Date()};
 
 function supaCfg(){try{const c=JSON.parse(localStorage.getItem("wakalat.supa")||"null");if(c&&c.url&&c.key)return c;}catch(e){}return (SUPA.url&&SUPA.key)?SUPA:null;}
 function supaHeaders(c){return{apikey:c.key,Authorization:"Bearer "+c.key,"Content-Type":"application/json"};}
 function setSyncStatus(t){const e=$("supaStatus");if(e)e.textContent=t;}
-function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir};}
+function cloudBlob(){return{profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir,accused:state.accused,lawyers:state.lawyers};}
 let _pushT;
 function schedulePush(){const c=supaCfg();if(!c||!state.email)return;clearTimeout(_pushT);_pushT=setTimeout(cloudPush,1500);}
 async function cloudPush(){const c=supaCfg();if(!c||!state.email)return false;try{
@@ -1077,7 +1088,7 @@ async function cloudFetch(email){const c=supaCfg();if(!c||!email)return null;try
   const r=await fetch(`${c.url}/rest/v1/vault?email=eq.${encodeURIComponent(email)}&select=account,data`,{headers:supaHeaders(c)});
   if(!r.ok)return null;const rows=await r.json();return rows[0]||null;
 }catch(e){return null;}}
-function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
+function applyData(d){if(!d)return;["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir","accused","lawyers"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];localStorage.setItem(DB.key(k),JSON.stringify(d[k]));}});}
 async function cloudPullApply(){const row=await cloudFetch(state.email);if(row&&row.data){applyData(row.data);if($("appShell")&&!$("appShell").classList.contains("hidden"))renderAll();return true;}return false;}
 
 function sealSVG(withText){
@@ -1167,9 +1178,11 @@ function renderAdminReqs(){
 function makeUnlock(ref,plan,expiresAt){const base=`${ref}|${plan}|${expiresAt}`;return btoa(base).replace(/=/g,"")+"."+hash32(base+ACTIVATION_SECRET);}
 function verifyUnlock(token,ref){try{const[b64,sig]=token.trim().split(".");if(!b64||!sig)return{ok:false,msg:"That code looks incomplete"};const base=atob(b64);if(hash32(base+ACTIVATION_SECRET)!==sig)return{ok:false,msg:"Invalid unlock code"};const[r,plan,exp]=base.split("|");if(r!==ref)return{ok:false,msg:"This code was issued for a different account"};if(exp<todayISO())return{ok:false,msg:"This code has expired"};return{ok:true,plan,expiresAt:exp};}catch(e){return{ok:false,msg:"Could not read that code"};}}
 
-function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.clients=DB.get("clients",[]);state.bench=DB.get("bench",[]);state.fir=DB.get("fir",[]);state.aikey=DB.get("aikey",null);}
+function loadState(){state.profile=DB.get("profile",null);state.sub=DB.get("sub",null);state.mine=DB.get("mine",[]);state.client=DB.get("client",[]);state.judge=DB.get("judge",[]);state.reminders=DB.get("reminders",[]);state.personal=DB.get("personal",[]);state.clients=DB.get("clients",[]);state.bench=DB.get("bench",[]);state.fir=DB.get("fir",[]);state.accused=DB.get("accused",[]);state.lawyers=DB.get("lawyers",[]);state.aikey=DB.get("aikey",null);}
 function isAdmin(){return state.email===ADMIN_EMAIL;}
-function subActive(){return isAdmin()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
+function trialDaysLeft(){const u=DB.users()[state.email];if(!u||!u.createdAt)return 0;const d=Math.floor((new Date(todayISO()+"T00:00:00")-new Date(u.createdAt+"T00:00:00"))/86400000);return Math.max(0,30-d);}
+function inTrial(){return trialDaysLeft()>0;}
+function subActive(){return isAdmin()||inTrial()||(state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO());}
 function canSave(){return subActive();}
 function showOnly(id){["authScreen","adminScreen","profileScreen","appShell"].forEach(s=>$(s).classList.toggle("hidden",s!==id));}
 function route(){
@@ -1194,7 +1207,11 @@ function enterApp(){
   $("chipName").textContent=(state.profile.fullName||"You").split(" ").slice(0,2).join(" ");
   $("aiKey").value=state.aikey||"";
   $("payEmail").textContent=PAY.EMAIL;
-  $("trialBanner").classList.toggle("hidden",subActive());
+  (function(){const paid=state.sub&&state.sub.expiresAt&&state.sub.expiresAt>=todayISO();const tl=trialDaysLeft();const b=$("trialBanner");
+    if(isAdmin()||paid){b.classList.add("hidden");}
+    else if(tl>0){b.classList.remove("hidden");b.innerHTML="🎁 Free month: <b>"+tl+" day"+(tl>1?"s":"")+" left</b> — saving is unlocked. <button id='trialCta'>Subscribe</button>";$("trialCta").onclick=openSub;}
+    else {b.classList.remove("hidden");b.innerHTML="Your free month ended — saving is locked. <button id='trialCta'>Subscribe to save</button>";$("trialCta").onclick=openSub;}
+  })();
   $("aiAskHint").textContent=state.aikey?"AI ready — ask anything about your matters.":"Needs your Gemini key (🔑 top-right).";
   const sc=(()=>{try{return JSON.parse(localStorage.getItem("wakalat.supa")||"null")}catch(e){return null}})();
   if($("supaUrl")){$("supaUrl").value=sc?.url||"";$("supaKey").value=sc?.key||"";}
@@ -1599,9 +1616,9 @@ function renderSettings(){
 $("aiSave").onclick=()=>{const k=$("aiKey").value.trim();state.aikey=k||null;DB.set("aikey",state.aikey);toast(k?"Gemini key saved":"Key cleared");};
 $("aiClear").onclick=()=>{$("aiKey").value="";state.aikey=null;DB.set("aikey",null);toast("Key removed");};
 $("editProfile").onclick=()=>{openProfile();showOnly("profileScreen");};
-$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
+$("exportData").onclick=()=>{const dump={profile:state.profile,sub:state.sub,mine:state.mine,client:state.client,judge:state.judge,reminders:state.reminders,personal:state.personal,clients:state.clients,bench:state.bench,fir:state.fir,accused:state.accused,lawyers:state.lawyers,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wakalat-backup-${todayISO()}.json`;a.click();toast("Backup downloaded");};
 $("importBtn").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir","accused","lawyers"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});renderAll();enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 $("signoutBtn").onclick=signOut;
 $("deleteAcct").onclick=()=>{if(prompt('Type DELETE to permanently remove this account and all its data:')!=="DELETE")return;["profile","sub","mine","client","judge","reminders","personal","clients","aikey"].forEach(k=>localStorage.removeItem(DB.key(k)));const users=DB.users();delete users[state.email];DB.saveUsers(users);DB.setSession(null);state.email=null;toast("Account deleted");route();};
 $("subscribeBtn").onclick=openSub;
@@ -1860,7 +1877,7 @@ function filterActive(){go("vClient");$("clientFilter").value="Active";renderCas
 window.filterActive=filterActive;
 $("homeBackup").onclick=()=>$("exportData").click();
 $("homeRestore").onclick=()=>$("homeRestoreFile").click();
-$("homeRestoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});enterApp();toast("Data restored on this device");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
+$("homeRestoreFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);["profile","sub","mine","client","judge","reminders","personal","clients","bench","fir","accused","lawyers"].forEach(k=>{if(d[k]!==undefined){state[k]=d[k];DB.set(k,d[k]);}});enterApp();toast("Data restored on this device");}catch(err){toast("That file could not be read");}};r.readAsText(f);};
 
 function findRec(kind,id){
   if(kind==="judge")return state.judge.find(j=>j.id===id);
@@ -2224,11 +2241,11 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
   css.textContent=`
   #vBench .bn-tools{background:linear-gradient(180deg,var(--green-tint),transparent);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;margin-bottom:14px}
   #vBench .bn-grp{border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
-  #vBench .bn-grp h4{font-family:'Marcellus',serif;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  #vBench .bn-grp h4{font-family:'Marcellus',serif;font-weight:400;font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
   #vBench .bn-fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
   #vBench .bn-fld.wide{grid-column:1/-1}
-  #vBench .bn-fld label{display:block;font-size:11px;font-weight:700;color:var(--ink-faint);margin-bottom:3px}
-  #vBench .bn-fld input,#vBench .bn-fld textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);font-size:13px}
+  #vBench .bn-fld label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+  #vBench .bn-fld input,#vBench .bn-fld textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);font-size:14px}
   #vBench .bn-fld textarea{min-height:60px;resize:vertical}
   #vBench .bn-cf{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-bottom:8px}
   #vBench .bn-cf input{padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);font-size:13px}
@@ -2238,7 +2255,7 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
   `;
   document.head.appendChild(css);
 
-  let data={}, custom=[], editId="";
+  let data={}, custom=[], editId="", photo=null;
 
   function fieldHTML(key,label){
     const long=LONG.has(key);
@@ -2265,6 +2282,7 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
           </div>
           <div class="hint" id="bnHint" style="margin-top:6px">Uses your selected AI provider (🔑). You can also fill by hand.</div>
         </div>
+        <div class="dsr-imgrow"><div class="dsr-img" id="bnAv" ${photo?`style="background-image:url(${photo})"`:""}>${photo?"":"👨‍⚖️"}</div><div><button class="btn sm" id="bnPhoto" type="button">Upload photo</button><input id="bnPhotoF" type="file" accept="image/*" class="hidden"><div class="hint" style="margin-top:6px">JPG/PNG under 2 MB</div></div></div>
         <div id="bnForm">${formHTML()}</div>
       </div>
       <div class="modal-foot"><button class="btn" id="bnCancel">Cancel</button><button class="btn primary" id="bnSave">Save judge</button></div></div>`;
@@ -2274,6 +2292,8 @@ ${src?("\nDOCUMENT:\n"+src.slice(0,9000)):""}`;
     document.getElementById("bnAddField").onclick=()=>{custom.push({label:"",value:""});renderCustom();};
     document.getElementById("bnExtract").onclick=async function(){const f=document.getElementById("bnFile").files[0];if(!f){toast("Choose a file");return;}this.disabled=true;const o=this.textContent;this.textContent="Extracting…";try{const t=await extractFileText(f,s=>this.textContent=s);if(t){const cur=document.getElementById("bnAiSrc").value.trim();document.getElementById("bnAiSrc").value=cur?cur+"\n\n"+t:t;toast("Text extracted");}else toast("No text found");}catch(e){toast("Extract failed");}this.disabled=false;this.textContent=o;};
     document.getElementById("bnAi").onclick=aiFill;
+    document.getElementById("bnPhoto").onclick=()=>document.getElementById("bnPhotoF").click();
+    document.getElementById("bnPhotoF").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image under 2 MB");return;}const r=new FileReader();r.onload=()=>{photo=r.result;const av=document.getElementById("bnAv");av.style.backgroundImage="url("+photo+")";av.textContent="";};r.readAsDataURL(f);};
     document.getElementById("bnSave").onclick=save;
     if(state.aikey)document.getElementById("bnHint").textContent="AI ready — describe the judge or paste notes, then Fill with AI.";
     ov.classList.add("on");
@@ -2310,14 +2330,14 @@ ${src.slice(0,12000)}`;
   function save(){
     if(typeof canSave==="function" && !canSave()){document.getElementById("bnOverlay").classList.remove("on");if(typeof openSub==="function")openSub();return;}
     if(!(data.name||"").trim()){toast("Judge's name is required");return;}
-    const obj=Object.assign({},data,{id:editId||("b"+Date.now()),custom:custom.filter(c=>c.label||c.value)});
+    const obj=Object.assign({},data,{id:editId||("b"+Date.now()),_photo:photo,custom:custom.filter(c=>c.label||c.value)});
     const i=state.bench.findIndex(x=>x.id===obj.id);
     if(i>=0)state.bench[i]=obj; else state.bench.unshift(obj);
     if(DB.set("bench",state.bench)){document.getElementById("bnOverlay").classList.remove("on");render();toast("Judge saved");}
   }
 
   window.openBench=function(rec){
-    editId=rec?.id||""; data=rec?Object.assign({},rec):{}; custom=(rec?.custom||[]).map(c=>({...c}));
+    editId=rec?.id||""; data=rec?Object.assign({},rec):{}; custom=(rec?.custom||[]).map(c=>({...c})); photo=rec?._photo||null;
     renderModal();
     document.getElementById("bnTitle").textContent=rec?"Edit judge":"New judge";
   };
@@ -2339,7 +2359,7 @@ ${src.slice(0,12000)}`;
       if(c.opposingParty||c.opposingCounsel)blocks.push(`<div class="meta"><span>⚔ ${esc(c.opposingParty||"")}${c.opposingCounsel?" · "+esc(c.opposingCounsel):""}</span></div>`);
       if(c.investigationGaps)blocks.push(`<div class="rem">🔍 Gaps: ${esc(c.investigationGaps)}</div>`);
       const cf=(c.custom||[]).filter(x=>x.label||x.value).map(x=>`<span><b>${esc(x.label||'—')}:</b> ${esc(x.value)}</span>`).join("");
-      return `<div class="case bn-card"><div class="top"><div class="name">${esc(c.name||"Judge")}${lean}</div><span class="st active">${esc(c.designation||"Judge")}</span></div>
+      return `<div class="case bn-card"><div class="top" style="display:flex;gap:11px;align-items:center">${c._photo?`<div class="dsr-av" style="background-image:url(${c._photo})"></div>`:`<div class="dsr-av">${esc((c.name||"J").charAt(0).toUpperCase())}</div>`}<div style="flex:1"><div class="name">${esc(c.name||"Judge")}${lean}</div></div><span class="st active">${esc(c.designation||"Judge")}</span></div>
         <div class="meta">${c.court?`<span>🏛 ${esc(c.court)}</span>`:""}${c.caseRef?`<span>📁 ${esc(c.caseRef)}</span>`:""}${c.io?`<span>👮 IO: ${esc(c.io)}</span>`:""}</div>
         ${blocks.join("")}${cf?`<div class="cflist">${cf}</div>`:""}
         <div class="acts"><button class="btn sm primary" onclick="editBench('${c.id}')">Open</button><button class="btn sm" onclick="delBench('${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
@@ -2725,7 +2745,9 @@ ${txt.slice(0,15000)}`;
     const ep={openai:"https://api.openai.com/v1/chat/completions",deepseek:"https://api.deepseek.com/chat/completions",openrouter:"https://openrouter.ai/api/v1/chat/completions"}[p];
     const body={model:c.model,temperature:0.3,max_tokens:4096,messages:[{role:"user",content:prompt}]};
     if(jsonMode)body.response_format={type:"json_object"};
-    const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify(body)});
+    const hd={"Content-Type":"application/json","Authorization":"Bearer "+key};
+    if(p==="openrouter"){hd["HTTP-Referer"]=(location&&location.origin)||"https://trendcatcher-kech.app";hd["X-Title"]="Pak Lawyer's AI-Notebook";}
+    const r=await fetch(ep,{method:"POST",headers:hd,body:JSON.stringify(body)});
     if(!r.ok)throw new Error(p+" "+r.status+" "+(await r.text()).slice(0,120));
     const d=await r.json();return d?.choices?.[0]?.message?.content||"";
   }
@@ -2770,7 +2792,7 @@ ${txt.slice(0,15000)}`;
     loadCfg();
     const wrap=$("aiProviderPanel");if(!wrap)return;
     wrap.innerHTML=`<h3>🔀 AI providers & fallback</h3>
-    <div class="sub">Pick a default provider and add a key for each you have. If the active one fails or rate-limits, the app automatically tries the next that has a key. Keys are stored only on this device.</div>
+    <div class="sub">Pick a default provider and add a key for each you have. If the active one fails or rate-limits, the app automatically tries the next that has a key. Keys are stored only on this device. <b>Easiest: Google Gemini (free) or OpenRouter</b> — both work directly in the browser. OpenAI &amp; DeepSeek can be blocked by the browser (CORS) and may need a proxy/server.</div>
     <div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--ink-faint)">Active provider</label><br>
       <select id="aipActive">${ORDER.map(p=>`<option value="${p}" ${CFG.active===p?'selected':''}>${DEFAULTS[p].label}</option>`).join("")}</select></div>
     ${ORDER.map(p=>`<div class="aip-row ${CFG.active===p?'active':''}" data-row="${p}">
@@ -2932,5 +2954,187 @@ ${txt.slice(0,6000)}`;
 })();
 </script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(e){})});}</script>
+<script>
+/* ===== Dossier factory: Accused & Lawyer profiles (image, AI fill, cross-links) ===== */
+(function(){
+  if(!document.querySelector("main"))return;
+  const css=document.createElement("style");
+  css.textContent=`
+  .dsr-ai{background:var(--green-tint);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;margin-bottom:14px}
+  [data-theme="dark"] .dsr-ai{background:#13251c}
+  .dsr-imgrow{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .dsr-img{width:74px;height:74px;border-radius:14px;border:2px solid var(--brass);object-fit:cover;background:var(--green-tint);display:grid;place-items:center;color:var(--green);font-size:26px;font-family:'Marcellus',serif;background-size:cover;background-position:center}
+  .dsr-grp{margin-bottom:6px}
+  .dsr-grp>h4{font-family:'Marcellus',serif;font-weight:400;font-size:16px;margin:16px 0 8px}
+  .dsr-av{width:48px;height:48px;border-radius:11px;flex:none;background:var(--green-tint);display:grid;place-items:center;color:var(--green);font-weight:700;font-family:'Marcellus',serif;font-size:18px;background-size:cover;background-position:center}
+  .dsr-gallery{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .dsr-gallery img{width:54px;height:54px;border-radius:8px;object-fit:cover;border:1px solid var(--line)}
+  `;
+  document.head.appendChild(css);
+
+  function recOptions(){
+    const out=[];
+    (state.client||[]).forEach(c=>out.push({ref:"client:"+c.id,name:c.title||"Case",t:"Case"}));
+    (state.judge||[]).forEach(j=>out.push({ref:"judge:"+j.id,name:j.name||j.cite||"Judgment",t:"Judgment"}));
+    (state.clients||[]).forEach(c=>out.push({ref:"clientc:"+c.id,name:c.name||"Client",t:"Client"}));
+    (state.bench||[]).forEach(c=>out.push({ref:"bench:"+c.id,name:c.name||"Judge",t:"Judge"}));
+    (state.accused||[]).forEach(c=>out.push({ref:"accused:"+c.id,name:c.name||"Accused",t:"Accused"}));
+    (state.lawyers||[]).forEach(c=>out.push({ref:"lawyers:"+c.id,name:c.name||"Lawyer",t:"Lawyer"}));
+    return out;
+  }
+  function refName(ref){const a=ref.split(":");const k=a[0],id=a[1];const m={client:state.client,judge:state.judge,clientc:state.clients,bench:state.bench,accused:state.accused,lawyers:state.lawyers};const arr=m[k]||[];const r=arr.find(x=>x.id===id);return r?(r.title||r.name||r.cite):null;}
+
+  function build(cfg){
+    let sec=document.getElementById(cfg.view);
+    if(!sec){sec=document.createElement("section");sec.className="view";sec.id=cfg.view;document.querySelector("main").appendChild(sec);}
+    if(window.VIEWS&&VIEWS.indexOf(cfg.view)<0)VIEWS.push(cfg.view);
+    const ALLF=[];cfg.groups.forEach(G=>G.f.forEach(x=>ALLF.push(x[0])));
+    let data={},custom=[],links=[],photo=null,gallery=[],editId="";
+
+    function paint(){
+      sec.innerHTML=`<div class="page-head"><div><h2>${esc(cfg.title)}</h2><div class="sub">${esc(cfg.sub)}</div></div><button class="btn primary" id="${cfg.view}Add">${cfg.addLabel}</button></div>
+        <div class="bar"><input id="${cfg.view}Search" placeholder="Search ${esc(cfg.title.toLowerCase())}, tags, links\u2026"></div>
+        <div class="cases" id="${cfg.view}List"></div>`;
+      document.getElementById(cfg.view+"Add").onclick=()=>open(null);
+      document.getElementById(cfg.view+"Search").addEventListener("input",render);
+      render();
+    }
+    function fieldHTML(k,label,long){
+      return long
+        ? `<div class="field" style="grid-column:1/-1"><label>${esc(label)}</label><textarea data-k="${k}">${esc(data[k]||"")}</textarea></div>`
+        : `<div class="field"><label>${esc(label)}</label><input data-k="${k}" value="${esc(data[k]||"")}"></div>`;
+    }
+    function groupsHTML(){
+      return cfg.groups.map(G=>`<div class="dsr-grp"><h4>${G.ic} ${esc(G.g)}</h4><div class="grid2">${G.f.map(x=>fieldHTML(x[0],x[1],x[2])).join("")}</div></div>`).join("");
+    }
+    function renderModal(){
+      let ov=document.getElementById(cfg.view+"Ov");
+      if(!ov){ov=document.createElement("div");ov.id=cfg.view+"Ov";ov.className="overlay";document.body.appendChild(ov);}
+      ov.innerHTML=`<div class="modal"><div class="modal-head"><h3 id="${cfg.view}Title">New ${cfg.noun}</h3><button class="icon-btn" id="${cfg.view}X" style="border-color:var(--line);background:var(--sand);color:var(--ink)">\u2715</button></div>
+        <div class="modal-body">
+          <div class="dsr-ai">
+            <label style="font-weight:600;font-size:12.5px;color:var(--ink-soft)">\u2728 AI quick-fill \u2014 describe, or paste/extract a document</label>
+            <textarea id="${cfg.view}Src" style="min-height:80px;margin-top:6px;width:100%" placeholder="${esc(cfg.aiPlaceholder)}"></textarea>
+            <div style="margin-top:8px"><input id="${cfg.view}File" type="file" accept="application/pdf,image/*,.docx"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button class="btn sm" id="${cfg.view}Extract" type="button">\U0001F4C4 Extract text</button>
+              <button class="btn brass sm" id="${cfg.view}Ai" type="button">\U0001F916 Fill with AI</button>
+            </div>
+            <div class="hint" id="${cfg.view}Hint" style="margin-top:6px">Uses your AI provider (\U0001F511). You can also fill by hand.</div>
+          </div>
+          <div class="dsr-imgrow">
+            <div class="dsr-img" id="${cfg.view}Av" ${photo?`style="background-image:url(${photo})"`:""}>${photo?"":"\U0001F464"}</div>
+            <div><button class="btn sm" id="${cfg.view}Photo" type="button">Upload photo</button><input id="${cfg.view}PhotoF" type="file" accept="image/*" class="hidden"><div class="hint" style="margin-top:6px">JPG/PNG under 2 MB</div></div>
+          </div>
+          <div id="${cfg.view}Form">${groupsHTML()}</div>
+          <div class="field"><label>More photos / evidence images</label><input id="${cfg.view}Gal" type="file" accept="image/*" multiple><div class="dsr-gallery" id="${cfg.view}GalView"></div></div>
+          <div class="field"><label>Tags <span class="hint" style="display:inline;font-weight:400">(comma separated)</span></label><input id="${cfg.view}Tags" placeholder="e.g. 302, repeat offender, narcotics" value="${esc((data._tags||[]).join(", "))}"></div>
+          <div class="field"><label>Link to cases, judgments, judges, accused, lawyers</label><div class="link-pick" id="${cfg.view}Links"></div></div>
+          <div class="field"><label>Your own fields</label><div id="${cfg.view}Custom"></div><button class="btn sm" id="${cfg.view}AddF" type="button">\uFF0B Add field</button></div>
+        </div>
+        <div class="modal-foot"><button class="btn" id="${cfg.view}Cancel">Cancel</button><button class="btn primary" id="${cfg.view}Save">Save ${cfg.noun}</button></div></div>`;
+      bindForm();renderCustom();renderLinks();renderGallery();
+      const close=()=>ov.classList.remove("on");
+      document.getElementById(cfg.view+"X").onclick=document.getElementById(cfg.view+"Cancel").onclick=close;
+      ov.addEventListener("click",e=>{if(e.target===ov)close();});
+      document.getElementById(cfg.view+"AddF").onclick=()=>{custom.push({label:"",value:""});renderCustom();};
+      document.getElementById(cfg.view+"Photo").onclick=()=>document.getElementById(cfg.view+"PhotoF").click();
+      document.getElementById(cfg.view+"PhotoF").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image under 2 MB");return;}const r=new FileReader();r.onload=()=>{photo=r.result;const av=document.getElementById(cfg.view+"Av");av.style.backgroundImage="url("+photo+")";av.textContent="";};r.readAsDataURL(f);};
+      document.getElementById(cfg.view+"Gal").onchange=e=>{[...e.target.files].forEach(f=>{if(f.size>2*1024*1024)return;const r=new FileReader();r.onload=()=>{gallery.push(r.result);renderGallery();};r.readAsDataURL(f);});};
+      document.getElementById(cfg.view+"Extract").onclick=async function(){const f=document.getElementById(cfg.view+"File").files[0];if(!f){toast("Choose a file");return;}this.disabled=true;const o=this.textContent;this.textContent="Extracting\u2026";try{const t=await extractFileText(f,x=>this.textContent=x);if(t){const el=document.getElementById(cfg.view+"Src");el.value=(el.value.trim()?el.value.trim()+"\n\n":"")+t;toast("Text extracted \u2014 tap Fill with AI");}else toast("No text found");}catch(e){toast("Extract failed");}this.disabled=false;this.textContent=o;};
+      document.getElementById(cfg.view+"Ai").onclick=aiFill;
+      document.getElementById(cfg.view+"Save").onclick=save;
+      if(state.aikey)document.getElementById(cfg.view+"Hint").textContent="AI ready \u2014 describe or paste, then Fill with AI.";
+      ov.classList.add("on");
+    }
+    function bindForm(){document.querySelectorAll("#"+cfg.view+"Form [data-k]").forEach(el=>el.oninput=()=>{data[el.dataset.k]=el.value;});}
+    function paintForm(){ALLF.forEach(k=>{const el=document.querySelector("#"+cfg.view+'Form [data-k="'+k+'"]');if(el)el.value=data[k]||"";});}
+    function renderCustom(){const box=document.getElementById(cfg.view+"Custom");if(!box)return;box.innerHTML=custom.map((c,i)=>`<div class="cf-row"><input placeholder="Field" value="${esc(c.label||"")}" data-ci="${i}" data-ck="label"><input placeholder="Detail" value="${esc(c.value||"")}" data-ci="${i}" data-ck="value"><button data-rm="${i}">\u2715</button></div>`).join("");box.querySelectorAll("input").forEach(i=>i.oninput=()=>{custom[+i.dataset.ci][i.dataset.ck]=i.value;});box.querySelectorAll("button[data-rm]").forEach(b=>b.onclick=()=>{custom.splice(+b.dataset.rm,1);renderCustom();});}
+    function renderLinks(){const box=document.getElementById(cfg.view+"Links");if(!box)return;const me=cfg.key+":"+editId;const list=recOptions().filter(o=>o.ref!==me);if(!list.length){box.innerHTML='<span class="hint" style="display:inline">Add some cases / judgments first to link them here.</span>';return;}box.innerHTML=list.map(o=>`<span class="link-opt ${links.indexOf(o.ref)>=0?"on":""}" data-ref="${o.ref}">${links.indexOf(o.ref)>=0?"\u2713 ":""}${esc(o.name)} <span style="opacity:.6">\u00b7 ${o.t}</span></span>`).join("");box.querySelectorAll(".link-opt").forEach(el=>el.onclick=()=>{const r=el.dataset.ref;const i=links.indexOf(r);if(i>=0)links.splice(i,1);else links.push(r);renderLinks();});}
+    function renderGallery(){const box=document.getElementById(cfg.view+"GalView");if(!box)return;box.innerHTML=gallery.map((g,i)=>`<div style="position:relative;display:inline-block"><img src="${g}"><button data-gi="${i}" style="position:absolute;top:-6px;right:-6px;border:none;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:11px;line-height:1">\u2715</button></div>`).join("");box.querySelectorAll("button[data-gi]").forEach(b=>b.onclick=()=>{gallery.splice(+b.dataset.gi,1);renderGallery();});}
+
+    async function aiFill(){
+      if(!state.aikey){toast("Add your AI key (\U0001F511)");return;}
+      const src=(document.getElementById(cfg.view+"Src").value||"").trim();if(src.length<8){toast("Describe or paste first");return;}
+      const btn=document.getElementById(cfg.view+"Ai"),o=btn.textContent;btn.disabled=true;btn.textContent="Reading\u2026";
+      try{
+        const prompt=cfg.perspective+' From the notes, extract a structured profile. Return ONLY valid JSON, "" when unknown, NEVER invent. Keys exactly:\n'+ALLF.join(", ")+'.\nKeep each value concise and factual.\nNOTES:\n'+src.slice(0,12000);
+        const j=parseJSON(await geminiCall(prompt,true));
+        const norm={};Object.keys(j||{}).forEach(k=>norm[k.toLowerCase().replace(/[^a-z0-9]/g,"")]=j[k]);
+        ALLF.forEach(k=>{const v=norm[k.toLowerCase().replace(/[^a-z0-9]/g,"")];if(v!=null&&String(v).trim()!=="")data[k]=Array.isArray(v)?v.join(", "):String(v);});
+        paintForm();toast("Filled \u2014 review & save");
+      }catch(e){toast("AI error: "+(e.message=="no-key"?"add your key":e.message));}
+      btn.disabled=false;btn.textContent=o;
+    }
+    function save(){
+      if(typeof canSave==="function"&&!canSave()){document.getElementById(cfg.view+"Ov").classList.remove("on");if(typeof openSub==="function")openSub();return;}
+      if(!(data.name||"").trim()){toast("Name is required");return;}
+      const tags=(document.getElementById(cfg.view+"Tags").value||"").split(",").map(t=>t.trim()).filter(Boolean);
+      const obj=Object.assign({},data,{id:editId||(cfg.key[0]+Date.now()),_tags:tags,_links:links.slice(),_photo:photo,_gallery:gallery.slice(),custom:custom.filter(c=>c.label||c.value)});
+      const arr=state[cfg.key]=state[cfg.key]||[];const i=arr.findIndex(x=>x.id===obj.id);
+      if(i>=0)arr[i]=obj;else arr.unshift(obj);
+      if(DB.set(cfg.key,arr)){document.getElementById(cfg.view+"Ov").classList.remove("on");render();toast(cfg.noun.charAt(0).toUpperCase()+cfg.noun.slice(1)+" saved");}
+    }
+    function open(rec){
+      editId=rec?rec.id:"";data=rec?Object.assign({},rec):{};custom=(rec&&rec.custom||[]).map(c=>({...c}));links=(rec&&rec._links||[]).slice();photo=rec?rec._photo||null:null;gallery=(rec&&rec._gallery||[]).slice();
+      if(rec&&rec._tags)data._tags=rec._tags.slice();
+      renderModal();
+      document.getElementById(cfg.view+"Title").textContent=rec?("Edit "+cfg.noun):("New "+cfg.noun);
+    }
+    function render(){
+      const se=document.getElementById(cfg.view+"Search");const q=(se&&se.value||"").toLowerCase();
+      const rows=(state[cfg.key]||[]).filter(c=>JSON.stringify(c).toLowerCase().indexOf(q)>=0);
+      const list=document.getElementById(cfg.view+"List");if(!list)return;
+      if(!rows.length){list.innerHTML=`<div class="empty" style="grid-column:1/-1"><h3>${(state[cfg.key]&&state[cfg.key].length)?"Nothing matches":("No "+cfg.title.toLowerCase()+" yet")}</h3><p>${esc(cfg.empty)}</p><button class="btn primary" onclick="${cfg.key}New()">${cfg.addLabel}</button></div>`;return;}
+      list.innerHTML=rows.map(c=>{
+        const av=c._photo?`<div class="dsr-av" style="background-image:url(${c._photo})"></div>`:`<div class="dsr-av">${esc((c.name||"?").charAt(0).toUpperCase())}</div>`;
+        const chips=cfg.chips.map(k=>c[k]?`<span>${(cfg.chipIcon[k]||"")} ${esc(c[k])}</span>`:"").join("");
+        const tags=(c._tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
+        const lks=(c._links||[]).map(r=>{const n=refName(r);return n?`<span class="file-chip">\U0001F517 ${esc(n)}</span>`:"";}).join("");
+        const hi=cfg.highlight.map(k=>c[k]?`<div class="rem">${(cfg.hiIcon[k]||"")} ${esc(c[k])}</div>`:"").join("");
+        const gal=(c._gallery||[]).slice(0,6).map(g=>`<img src="${g}">`).join("");
+        return `<div class="case dsr-card"><div class="top" style="display:flex;gap:11px;align-items:center">${av}<div style="flex:1;min-width:0"><div class="name">${esc(c.name||cfg.noun)}</div><div class="meta">${chips}</div></div></div>${hi}${tags?`<div class="tagrow">${tags}</div>`:""}${gal?`<div class="dsr-gallery">${gal}</div>`:""}${lks?`<div class="files">${lks}</div>`:""}<div class="acts"><button class="btn sm primary" onclick="${cfg.key}Open('${c.id}')">Open</button><button class="btn sm" onclick="${cfg.key}Del('${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
+      }).join("");
+    }
+    window[cfg.key+"Open"]=id=>open((state[cfg.key]||[]).find(c=>c.id===id));
+    window[cfg.key+"Del"]=id=>{if(!confirm("Delete this "+cfg.noun+"?"))return;state[cfg.key]=(state[cfg.key]||[]).filter(c=>c.id!==id);DB.set(cfg.key,state[cfg.key]);render();toast("Deleted");};
+    window[cfg.key+"New"]=()=>open(null);
+    paint();
+    document.addEventListener("click",e=>{if(e.target.closest('button[data-view="'+cfg.view+'"]'))setTimeout(render,30);});
+  }
+
+  build({view:"vAccused",key:"accused",noun:"accused",title:"Accused",addLabel:"\uFF0B New accused",
+    sub:"Profile each accused / suspect \u2014 identity, criminal history, character, OSINT, photos and the evidence that matters. Link them to cases, judges and lawyers.",
+    aiPlaceholder:"e.g. Accused Ali Raza s/o Ahmed, CNIC 1234..., FIR 122/24 u/s 302/34, two prior FIRs for theft, known in Saddar area, currently on bail, drives a black Civic\u2026",
+    perspective:"You are a Pakistani criminal investigator building a profile of an ACCUSED person.",
+    empty:"Add an accused with full history, character, OSINT and evidence \u2014 fillable by AI or by hand.",
+    chips:["cnic","status","sections"],chipIcon:{cnic:"\U0001FAAA",status:"\U0001F516",sections:"\u2696\uFE0E"},
+    highlight:["priorRecord","generalNature","relevanceToCase"],hiIcon:{priorRecord:"\U0001F4DB Prior:",generalNature:"\U0001F9ED",relevanceToCase:"\U0001F3AF"},
+    groups:[
+      {g:"Identity",ic:"\U0001FAAA",f:[["name","Full name"],["alias","Alias / nickname"],["cnic","CNIC / ID"],["dob","Date of birth / age"],["gender","Gender"],["father","Father / guardian"],["address","Address"],["contact","Contact"],["occupation","Occupation"]]},
+      {g:"This case",ic:"\U0001F4C1",f:[["caseRef","Related case / FIR no."],["role","Role (accused / co-accused / suspect)"],["status","Custody status (in custody / on bail / absconder)"],["sections","Sections / offence"]]},
+      {g:"Criminal history & record",ic:"\U0001F4DB",f:[["priorRecord","Previous convictions / record",1],["previousCrimes","Previous crimes / FIRs",1],["pendingCases","Other pending cases",1],["modus","Modus operandi / pattern",1],["affiliation","Gang / group affiliation"]]},
+      {g:"Character & nature",ic:"\U0001F9ED",f:[["generalNature","General nature"],["temperament","Temperament / behaviour"],["character","Character (good/bad) & certificates",1],["education","Education"],["reputation","Reputation in area",1],["references","Character references"]]},
+      {g:"OSINT & footprint",ic:"\U0001F6F0",f:[["social","Social media / online presence",1],["associates","Known associates",1],["locations","Locations frequented"],["vehicles","Vehicles"],["assets","Assets / wealth"]]},
+      {g:"Evidence & relevance",ic:"\U0001F50E",f:[["evidenceAgainst","Evidence against",1],["evidenceFor","Evidence in favour",1],["alibi","Alibi"],["witnesses","Witnesses about them",1],["relevanceToCase","Relevance to your case",1],["notes","Other notes",1]]}
+    ]});
+
+  build({view:"vLawyers",key:"lawyers",noun:"lawyer",title:"Lawyers",addLabel:"\uFF0B New lawyer",
+    sub:"Profile opposing counsel and colleagues \u2014 professional record, courtroom style, strengths/weaknesses, rapport and tactics. Link them to cases and judges.",
+    aiPlaceholder:"e.g. Opposing counsel Mr. Raza, senior criminal lawyer, aggressive cross-examiner, good rapport with the Sessions judge, weak on documentary evidence\u2026",
+    perspective:"You are a Pakistani litigation strategist profiling a LAWYER (opposing counsel or colleague).",
+    empty:"Add a lawyer with professional record, style, strengths and rapport \u2014 fillable by AI or by hand.",
+    chips:["firm","barCouncil","role"],chipIcon:{firm:"\U0001F3E2",barCouncil:"\U0001F393",role:"\U0001F516"},
+    highlight:["reputation","courtroomStyle","strategyAgainst"],hiIcon:{reputation:"\u2B50",courtroomStyle:"\U0001F3AD",strategyAgainst:"\u265F"},
+    groups:[
+      {g:"Identity",ic:"\U0001FAAA",f:[["name","Full name"],["firm","Firm / chamber"],["barCouncil","Bar council / membership"],["enrolment","Enrolment no."],["contact","Contact"],["email","Email"],["office","Office address"]]},
+      {g:"Professional record",ic:"\U0001F393",f:[["practiceAreas","Practice areas"],["seniority","Seniority / years"],["education","Education"],["notableCases","Notable cases",1],["reputation","Reputation",1],["trend","Win/loss trend"]]},
+      {g:"Style & nature",ic:"\U0001F3AD",f:[["courtroomStyle","Courtroom style",1],["strengths","Strengths",1],["weaknesses","Weaknesses",1],["temperament","Temperament"],["tactics","Tactics / habits",1],["negotiation","Negotiation style"]]},
+      {g:"Rapport & ethics",ic:"\U0001F91D",f:[["rapportJudges","Rapport with judges",1],["rapportBar","Rapport with the bar"],["rapportYou","Rapport with you"],["ethics","Ethics / reliability"]]},
+      {g:"This matter",ic:"\U0001F4C1",f:[["caseRef","Related case / no."],["role","Role (opposing / co-counsel)"],["theirTheory","Their case theory",1],["strategyAgainst","Your strategy against them",1],["notes","Other notes",1]]}
+    ]});
+})();
+
+</script>
 </body>
 </html>
