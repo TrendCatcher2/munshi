@@ -410,10 +410,19 @@ details.help a{color:var(--brass)}
 .home-cta .hc-tx div{font-size:12.5px;opacity:.95;line-height:1.45}
 .home-cta .btn.primary{flex:none;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45);color:#fff;box-shadow:none}
 @media(max-width:640px){.home-cta{flex-wrap:wrap}.home-cta .btn{width:100%}}
+.tb-slogan{position:relative;align-self:flex-start;margin-top:1px;transform:rotate(-5deg);transform-origin:top center;transition:transform .35s ease;flex:0 0 auto}
+.tb-slogan:hover{transform:rotate(0)}
+.tb-slogan::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:2px;height:10px;background:linear-gradient(#c2521d,#7a3a12);z-index:1}
+.tb-slogan::after{content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe6c0,#a85b18);box-shadow:0 1px 4px rgba(0,0,0,.5);z-index:2}
+.tb-slogan span{display:inline-block;font-family:'Marcellus',serif;font-weight:600;font-size:13px;letter-spacing:.3px;color:#fff;padding:6px 16px;border-radius:7px;background:linear-gradient(120deg,#f0931f,#5e2410,#c2521d,#3a1606);background-size:300% 300%;animation:slogShift 9s ease infinite;box-shadow:0 7px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2);border:1px solid rgba(255,184,96,.4);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+@keyframes slogShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media(max-width:760px){.tb-slogan span{font-size:11px;padding:5px 11px}}
+@media(max-width:520px){.tb-slogan{display:none}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -522,6 +531,7 @@ details.help a{color:var(--brass)}
       <span class="logoSlot" data-size="34"></span>
       <div><span class="en">Pak Lawyer's AI-Notebook</span><span class="tag">Every hearing, every file — one place.</span></div>
     </div>
+    <div class="tb-slogan" aria-hidden="true"><span>⚖ Every case, in order.</span></div>
     <div class="tb-right">
       <button class="icon-btn" id="aiKeyBtn" title="AI key">🔑</button>
       <button class="icon-btn" id="themeBtn" title="Theme (light / dark / grey)">◐</button>
@@ -760,6 +770,24 @@ details.help a{color:var(--brass)}
         <div class="kv"><span class="k">Practice area</span><span class="v" id="setArea">—</span></div>
         <div class="kv"><span class="k">City</span><span class="v" id="setCity">—</span></div>
         <div style="margin-top:14px"><button class="btn" id="editProfile">Edit profile</button></div>
+      </div>
+      <div class="panel"><h3>Google Drive backup — your data on every device</h3>
+        <div class="desc">Save one backup file to your own Google Drive. Open the app on another phone or laptop, tap Restore, and you're up to date. With auto-backup on, it updates every hour while the app is open.</div>
+        <div class="field"><label>Google OAuth Client ID</label><input id="gdClient" placeholder="xxxx.apps.googleusercontent.com"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="gdConnect">Connect Drive</button><button class="btn" id="gdUp">Back up now ↑</button><button class="btn" id="gdDown">Restore ↓</button><button class="btn sm" id="gdOff">Disconnect</button></div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px"><input type="checkbox" id="gdAuto"> Auto-backup every hour (while the app is open)</label>
+        <div class="hint" id="gdStatus" style="margin-top:8px"></div>
+        <details class="help"><summary>One-time setup (≈3 minutes)</summary>
+          <ol style="line-height:1.7">
+            <li>Open <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> and create or pick a project.</li>
+            <li><b>APIs &amp; Services → Enable APIs</b> → enable <b>Google Drive API</b>.</li>
+            <li><b>OAuth consent screen</b> → External → add your own email as a Test user.</li>
+            <li><b>Credentials → Create credentials → OAuth client ID → Web application</b>.</li>
+            <li>Under <b>Authorized JavaScript origins</b> add your app address (your GitHub Pages URL, e.g. https://yourname.github.io).</li>
+            <li>Copy the <b>Client ID</b> into the box above and tap <b>Connect Drive</b>.</li>
+          </ol>
+          <div class="hint">Uses the <b>drive.file</b> scope — the app can only see the one backup file it creates, nothing else in your Drive.</div>
+        </details>
       </div>
       <div class="panel"><h3>Cloud sync — use on any device</h3>
         <div class="desc">Optional. Connect a free Supabase project once; then log in on any device to access all your data.</div>
@@ -1032,6 +1060,7 @@ const ADMIN_EMAIL = "trendcatcher299@gmail.com";
 const ADMIN_PIN = "4841";
 const ACTIVATION_SECRET = "WAKALAT-CHANGE-ME-7731";
 const COMPANY = "TrendCatcher-Kech";
+window.GOOGLE_CLIENT_ID = ""; // ← paste your Google OAuth "Web application" Client ID here to enable Drive backup for everyone
 const PAY = {
   WHATSAPP:"923323254841", EMAIL:"trendcatcher299@gmail.com",
   METHODS:[
@@ -2762,14 +2791,26 @@ ${txt.slice(0,15000)}`;
   }
   function order(){const a=CFG.active;return [a,...ORDER.filter(p=>p!==a)].filter(p=>CFG.providers[p].key.trim());}
 
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   async function callProvider(p,prompt,jsonMode){
     const c=CFG.providers[p],key=c.key.trim();if(!key)throw new Error(p+": no key");
     if(p==="gemini"){
       const body={contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3}};
       if(jsonMode)body.generationConfig.responseMimeType="application/json";
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent?key=${encodeURIComponent(key)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-      if(!r.ok)throw new Error("gemini "+r.status+" "+(await r.text()).slice(0,120));
-      const d=await r.json();return d?.candidates?.[0]?.content?.parts?.[0]?.text||"";
+      const models=[c.model,"gemini-2.0-flash","gemini-1.5-flash"].filter((m,i,a)=>m&&a.indexOf(m)===i);
+      let le;
+      for(const m of models){
+        for(let attempt=0;attempt<3;attempt++){
+          const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent?key=${encodeURIComponent(key)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+          if(r.ok){const d=await r.json();return d?.candidates?.[0]?.content?.parts?.[0]?.text||"";}
+          const t=(await r.text()).slice(0,140);
+          le=new Error("gemini "+r.status+(r.status===429?" (busy — retrying)":"")+" "+t);
+          if(r.status===429||r.status===503){await sleep(600*(attempt+1));continue;}
+          if(r.status===500)break;
+          throw le;
+        }
+      }
+      throw le;
     }
     const ep={openai:"https://api.openai.com/v1/chat/completions",deepseek:"https://api.deepseek.com/chat/completions",openrouter:"https://openrouter.ai/api/v1/chat/completions"}[p];
     const body={model:c.model,temperature:0.3,max_tokens:4096,messages:[{role:"user",content:prompt}]};
@@ -3196,6 +3237,214 @@ ${txt.slice(0,6000)}`;
       {g:"Rapport & ethics",ic:"🤝",f:[["rapportJudges","Rapport with judges",1],["rapportBar","Rapport with the bar"],["rapportYou","Rapport with you"],["ethics","Ethics / reliability"]]},
       {g:"This matter",ic:"📁",f:[["caseRef","Related case / no."],["role","Role (opposing / co-counsel)"],["theirTheory","Their case theory",1],["strategyAgainst","Your strategy against them",1],["notes","Other notes",1]]}
     ]});
+})();
+
+</script>
+<script>
+/* ===== Google Drive backup (drive.file scope) — per-user backup to their own Drive ===== */
+(function(){
+  if(!document.getElementById("vSettings"))return;
+  const LS_CLIENT="wakalat.gclient", LS_FILE="wakalat.gdriveFile", LS_AUTO="wakalat.gdriveAuto", LS_LAST="wakalat.gdriveLast";
+  function clientId(){return ((localStorage.getItem(LS_CLIENT)||"").trim())||((window.GOOGLE_CLIENT_ID||"").trim());}
+  let tokenClient=null, accessToken=null, tokenExp=0;
+
+  if(!document.getElementById("gisScript")){
+    const sc=document.createElement("script");
+    sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.defer=true;sc.id="gisScript";
+    sc.onload=()=>status();
+    document.head.appendChild(sc);
+  }
+
+  function initClient(){
+    if(tokenClient)return true;
+    if(!window.google||!google.accounts||!google.accounts.oauth2)return false;
+    const cid=clientId();if(!cid)return false;
+    tokenClient=google.accounts.oauth2.initTokenClient({client_id:cid,scope:"https://www.googleapis.com/auth/drive.file",callback:()=>{}});
+    return true;
+  }
+  function getToken(){
+    return new Promise((resolve,reject)=>{
+      if(accessToken&&Date.now()<tokenExp-60000){resolve(accessToken);return;}
+      if(!initClient()){reject(new Error(clientId()?"Google sign-in not ready — try again in a moment":"No Google Client ID set (see Advanced below)"));return;}
+      tokenClient.callback=(resp)=>{
+        if(resp&&resp.error){reject(new Error(resp.error));return;}
+        accessToken=resp.access_token;tokenExp=Date.now()+((resp.expires_in||3600)*1000);resolve(accessToken);
+      };
+      try{tokenClient.requestAccessToken({prompt:""});}catch(e){reject(e);}
+    });
+  }
+  function fileName(){return "pak-lawyer-notebook-"+(((state&&state.email)||"user").replace(/[^a-z0-9]/gi,"_"))+".json";}
+  async function findFile(token){
+    const q=encodeURIComponent("name='"+fileName()+"' and trashed=false");
+    const r=await fetch("https://www.googleapis.com/drive/v3/files?spaces=drive&fields=files(id,modifiedTime)&q="+q,{headers:{Authorization:"Bearer "+token}});
+    if(!r.ok)throw new Error("Drive list "+r.status);
+    const j=await r.json();return (j.files&&j.files[0])?j.files[0].id:null;
+  }
+  async function upload(){
+    if(!state||!state.email)throw new Error("Sign in first");
+    const token=await getToken();
+    let fileId=localStorage.getItem(LS_FILE)||await findFile(token);
+    const payload={app:"pak-lawyer-notebook",email:state.email,savedAt:new Date().toISOString(),data:cloudBlob()};
+    const boundary="plnb"+Date.now();
+    const meta=fileId?{}:{name:fileName(),mimeType:"application/json"};
+    const body="--"+boundary+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify(meta)+"\r\n--"+boundary+"\r\nContent-Type: application/json\r\n\r\n"+JSON.stringify(payload)+"\r\n--"+boundary+"--";
+    const url=fileId?("https://www.googleapis.com/upload/drive/v3/files/"+fileId+"?uploadType=multipart"):"https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
+    const r=await fetch(url,{method:fileId?"PATCH":"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"multipart/related; boundary="+boundary},body:body});
+    if(!r.ok)throw new Error("Drive save "+r.status+" "+(await r.text()).slice(0,120));
+    const j=await r.json();if(j.id)localStorage.setItem(LS_FILE,j.id);
+    localStorage.setItem(LS_LAST,new Date().toISOString());
+    return true;
+  }
+  async function restore(){
+    const token=await getToken();
+    const fileId=localStorage.getItem(LS_FILE)||await findFile(token);
+    if(!fileId)throw new Error("No backup found in this Google account");
+    const r=await fetch("https://www.googleapis.com/drive/v3/files/"+fileId+"?alt=media",{headers:{Authorization:"Bearer "+token}});
+    if(!r.ok)throw new Error("Drive read "+r.status);
+    const j=await r.json();const data=(j&&j.data)?j.data:j;
+    if(!data)throw new Error("Backup is empty");
+    applyData(data);localStorage.setItem(LS_FILE,fileId);
+    if(typeof renderAll==="function")renderAll();
+    return true;
+  }
+
+  const panel=document.createElement("div");
+  panel.className="panel";panel.id="gdrivePanel";panel.style.marginTop="14px";
+  panel.innerHTML='<h3>\u2601\uFE0F Google Drive backup</h3>'+
+    '<div class="desc">Back up your notebook to your own Google Drive, so a cache clear or a new device never loses your work. Your data goes only to <b>your</b> Drive — nobody else can see it.</div>'+
+    '<div class="kv"><span class="k">Status</span><span class="v" id="gdStatus">\u2026</span></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+
+      '<button class="btn primary sm" id="gdConnect">Connect &amp; back up now</button>'+
+      '<button class="btn sm" id="gdRestore">Restore from Drive</button>'+
+      '<label class="btn sm" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="gdAuto" style="margin:0;width:auto"> Auto every hour</label>'+
+    '</div>'+
+    '<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft)">Advanced \u2014 one-time Google Client ID setup</summary>'+
+      '<div class="desc" style="margin-top:8px">Set by the publisher once. In Google Cloud Console create an OAuth <b>Web application</b> client, add your site URL to <i>Authorized JavaScript origins</i>, then paste the client ID here.</div>'+
+      '<input id="gdClient" placeholder="xxxxxxxx.apps.googleusercontent.com" style="margin-top:6px;width:100%">'+
+      '<button class="btn sm" id="gdClientSave" style="margin-top:8px">Save client ID</button>'+
+    '</details>';
+  document.getElementById("vSettings").appendChild(panel);
+  const g=id=>document.getElementById(id);
+  g("gdClient").value=localStorage.getItem(LS_CLIENT)||"";
+  g("gdAuto").checked=localStorage.getItem(LS_AUTO)==="1";
+
+  function status(msg){
+    const el=g("gdStatus");if(!el)return;
+    if(msg){el.textContent=msg;return;}
+    if(!clientId()){el.textContent="Not set up \u2014 add a Google Client ID (Advanced)";return;}
+    const last=localStorage.getItem(LS_LAST);
+    el.textContent=last?("Last backup: "+new Date(last).toLocaleString()):"Ready \u2014 tap Connect & back up";
+  }
+  status();
+
+  g("gdClientSave").onclick=()=>{const v=g("gdClient").value.trim();if(v)localStorage.setItem(LS_CLIENT,v);else localStorage.removeItem(LS_CLIENT);tokenClient=null;accessToken=null;toast("Client ID saved");status();};
+  g("gdConnect").onclick=async function(){this.disabled=true;const o=this.textContent;this.textContent="Working\u2026";try{await upload();toast("Backed up to Google Drive");status();}catch(e){toast("Drive: "+e.message);status("Error: "+e.message);}this.disabled=false;this.textContent=o;};
+  g("gdRestore").onclick=async function(){if(!confirm("Replace this device's data with your Google Drive backup?"))return;this.disabled=true;const o=this.textContent;this.textContent="Restoring\u2026";try{await restore();toast("Restored from Google Drive");status();}catch(e){toast("Drive: "+e.message);}this.disabled=false;this.textContent=o;};
+  g("gdAuto").onchange=e=>{localStorage.setItem(LS_AUTO,e.target.checked?"1":"0");toast(e.target.checked?"Auto-backup on (hourly)":"Auto-backup off");};
+
+  setInterval(async()=>{
+    if(localStorage.getItem(LS_AUTO)!=="1"||!clientId()||!state||!state.email)return;
+    try{await upload();status();}catch(e){/* silent; user can reconnect */}
+  },3600000);
+
+  window.gDriveBackup=upload;window.gDriveRestore=restore;
+})();
+
+</script>
+<script>
+/* ===== Google Drive backup (one file, all devices) ===== */
+(function(){
+  const FILE="pak-lawyer-backup.json";
+  const KEY="wakalat.gdrive";
+  let tokenClient=null, accessToken=null, tokenExp=0, timer=null;
+  function cfg(){try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){return {};}}
+  function setCfg(o){localStorage.setItem(KEY,JSON.stringify(o));}
+  function status(t){const e=document.getElementById("gdStatus");if(e)e.textContent=t;}
+  function ready(){return typeof google!=="undefined"&&google.accounts&&google.accounts.oauth2;}
+  function ensureClient(){
+    const c=cfg();
+    if(!c.clientId){status("Add your Client ID, then Connect.");return false;}
+    if(!ready()){status("Google sign-in is still loading \u2014 try again in a moment.");return false;}
+    if(!tokenClient||tokenClient._cid!==c.clientId){
+      tokenClient=google.accounts.oauth2.initTokenClient({client_id:c.clientId,scope:"https://www.googleapis.com/auth/drive.file",callback:function(){}});
+      tokenClient._cid=c.clientId;
+    }
+    return true;
+  }
+  function getToken(interactive){
+    return new Promise(function(res,rej){
+      if(accessToken&&Date.now()<tokenExp-60000){res(accessToken);return;}
+      if(!ensureClient()){rej(new Error("not configured"));return;}
+      tokenClient.callback=function(resp){
+        if(resp&&resp.access_token){accessToken=resp.access_token;tokenExp=Date.now()+(resp.expires_in?resp.expires_in*1000:3500000);res(accessToken);}
+        else rej(new Error(resp&&resp.error?resp.error:"sign-in cancelled"));
+      };
+      try{tokenClient.requestAccessToken({prompt:interactive?"consent":""});}catch(e){rej(e);}
+    });
+  }
+  async function findFile(tok){
+    const q=encodeURIComponent("name='"+FILE+"' and trashed=false");
+    const r=await fetch("https://www.googleapis.com/drive/v3/files?spaces=drive&q="+q+"&fields=files(id,modifiedTime)",{headers:{Authorization:"Bearer "+tok}});
+    if(!r.ok)throw new Error("Drive list "+r.status);
+    const d=await r.json();return (d.files&&d.files[0])||null;
+  }
+  async function push(interactive){
+    try{
+      status("Backing up\u2026");
+      const tok=await getToken(interactive);
+      const json=JSON.stringify({app:"pak-lawyer-notebook",email:state.email,savedAt:new Date().toISOString(),data:cloudBlob()});
+      let c=cfg(); let fileId=c.fileId;
+      if(!fileId){const f=await findFile(tok);if(f)fileId=f.id;}
+      if(fileId){
+        const r=await fetch("https://www.googleapis.com/upload/drive/v3/files/"+fileId+"?uploadType=media",{method:"PATCH",headers:{Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:json});
+        if(!r.ok){if(r.status===404){fileId=null;}else throw new Error("upload "+r.status);}
+      }
+      if(!fileId){
+        const boundary="plnb"+Date.now();
+        const meta={name:FILE,mimeType:"application/json"};
+        const body="--"+boundary+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify(meta)+"\r\n--"+boundary+"\r\nContent-Type: application/json\r\n\r\n"+json+"\r\n--"+boundary+"--";
+        const r=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{Authorization:"Bearer "+tok,"Content-Type":"multipart/related; boundary="+boundary},body:body});
+        if(!r.ok)throw new Error("create "+r.status);
+        const d=await r.json();fileId=d.id;
+      }
+      c=cfg();c.fileId=fileId;setCfg(c);
+      status("\u2713 Backed up to Drive \u00b7 "+new Date().toLocaleTimeString());
+      return true;
+    }catch(e){status("Backup failed: "+e.message);return false;}
+  }
+  async function pull(){
+    try{
+      status("Restoring\u2026");
+      const tok=await getToken(true);
+      let c=cfg(); let fileId=c.fileId;
+      if(!fileId){const f=await findFile(tok);if(f){fileId=f.id;c.fileId=fileId;setCfg(c);}}
+      if(!fileId){status("No backup found in your Drive yet.");return false;}
+      const r=await fetch("https://www.googleapis.com/drive/v3/files/"+fileId+"?alt=media",{headers:{Authorization:"Bearer "+tok}});
+      if(!r.ok)throw new Error("download "+r.status);
+      const d=await r.json();
+      if(d&&d.data){applyData(d.data);if(typeof renderAll==="function")renderAll();status("\u2713 Restored from Drive \u00b7 "+new Date().toLocaleTimeString());if(typeof toast==="function")toast("Loaded your Drive backup");return true;}
+      status("Backup file was empty.");return false;
+    }catch(e){status("Restore failed: "+e.message);return false;}
+  }
+  function startAuto(){
+    if(timer)clearInterval(timer);
+    if(cfg().auto&&cfg().clientId){timer=setInterval(function(){push(false);},3600000);}
+  }
+  function bind(){
+    const g=function(id){return document.getElementById(id);};
+    if(!g("gdConnect"))return;
+    const c=cfg();
+    if(g("gdClient"))g("gdClient").value=c.clientId||"";
+    if(g("gdAuto"))g("gdAuto").checked=!!c.auto;
+    status(c.clientId?(c.auto?"Connected \u00b7 auto-backup hourly while open":"Connected \u00b7 manual backup"):"Not connected (this browser only).");
+    g("gdConnect").onclick=async function(){const cc=cfg();cc.clientId=((g("gdClient").value)||"").trim();setCfg(cc);if(!cc.clientId){if(typeof toast==="function")toast("Paste your Client ID first");return;}const ok=await push(true);if(ok){if(typeof toast==="function")toast("Google Drive connected");startAuto();}};
+    g("gdUp").onclick=function(){push(true);};
+    g("gdDown").onclick=function(){pull();};
+    g("gdOff").onclick=function(){setCfg({});accessToken=null;if(timer)clearInterval(timer);if(g("gdClient"))g("gdClient").value="";if(g("gdAuto"))g("gdAuto").checked=false;status("Disconnected (this browser only).");if(typeof toast==="function")toast("Drive disconnected");};
+    g("gdAuto").onchange=function(){const cc=cfg();cc.auto=g("gdAuto").checked;setCfg(cc);startAuto();status(cc.auto?"Auto-backup hourly ON":"Auto-backup off");};
+    startAuto();
+  }
+  if(document.readyState!=="loading")setTimeout(bind,0);else document.addEventListener("DOMContentLoaded",bind);
 })();
 
 </script>
