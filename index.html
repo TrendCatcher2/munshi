@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pak Lawyer's AI Munshi — Every hearing, every file, in one place</title>
+<title>Pak Lawyer's AI-Notebook — Every hearing, every file, in one place</title>
 <meta name="theme-color" content="#0B5D3B">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AI Munshi">
+<meta name="apple-mobile-web-app-title" content="AI-Notebook">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Marcellus&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -96,7 +96,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:6px}
 .wordmark{display:flex;align-items:baseline;gap:10px}
 .wordmark .ur{font-family:'Noto Nastaliq Urdu',serif;font-size:30px;color:var(--green-deep);line-height:1.6}
-.wordmark .en{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.6px;text-align:center;line-height:1.12;background:linear-gradient(95deg,#9A3412 0%,#C2410C 45%,#EA580C 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wordmark .en{font-family:'Sora',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.6px;text-align:center;line-height:1.12;background:linear-gradient(95deg,#9A3412 0%,#C2410C 45%,#EA580C 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 [data-theme="dark"] .wordmark .en{background:linear-gradient(95deg,#F59E0B 0%,#FB923C 50%,#FDBA74 100%);-webkit-background-clip:text;background-clip:text}
 [data-theme="dark"] .wordmark .ur{color:var(--brass)}
 .slogan{font-size:12.5px;color:var(--ink-faint);max-width:320px}
@@ -155,7 +155,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 #appShell{min-height:100dvh;display:flex;flex-direction:column}
 .topbar{position:sticky;top:0;z-index:40;background:linear-gradient(110deg,var(--green-deep),var(--green) 60%,var(--teal));color:#F2EEE3;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 14px rgba(6,58,38,.25)}
 .tb-brand{display:flex;align-items:center;gap:11px;min-width:0}
-.tb-brand .en{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.3px;color:#FFB454}
+.tb-brand .en{font-family:'Sora',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.3px;color:#FFB454}
 .tb-brand .tag{display:block;font-size:9.5px;font-weight:500;letter-spacing:.4px;color:#CFE6D8;text-transform:none;margin-top:1px}
 .tb-right{display:flex;align-items:center;gap:8px}
 .icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#F2EEE3;display:grid;place-items:center;font-size:15px}
@@ -416,7 +416,7 @@ details.help a{color:var(--brass)}
     <div class="gate-card">
       <div class="brand">
         <svg class="seal" width="78" height="78" viewBox="0 0 80 80" id="sealAuth"></svg>
-        <div class="wordmark"><span class="en">Pak Lawyer&#39;s AI Munshi</span></div>
+        <div class="wordmark"><span class="en">Pak Lawyer&#39;s AI-Notebook</span></div>
         <div class="slogan">Every hearing, every file, in one place.</div>
         <div class="company-tag"><span class="logoSlot" data-size="20"></span> by <b>TrendCatcher-Kech</b></div>
       </div>
@@ -450,7 +450,7 @@ details.help a{color:var(--brass)}
   <div class="gate-wrap">
     <div class="gate-card" id="adminLock">
       <div class="brand"><svg class="seal" width="58" height="58" viewBox="0 0 80 80" id="sealAdmin"></svg>
-        <div class="wordmark"><span class="en" style="font-size:18px">Pak Lawyer&#39;s AI Munshi · Admin</span></div>
+        <div class="wordmark"><span class="en" style="font-size:18px">Pak Lawyer&#39;s AI-Notebook · Admin</span></div>
         <div class="company-tag"><span class="logoSlot" data-size="18"></span> TrendCatcher-Kech</div></div>
       <h2 class="gate-h">Owner console</h2>
       <p class="gate-sub">Enter your admin PIN to manage subscriptions.</p>
@@ -513,7 +513,7 @@ details.help a{color:var(--brass)}
   <div class="topbar">
     <div class="tb-brand">
       <span class="logoSlot" data-size="34"></span>
-      <div><span class="en">Pak Lawyer's AI Munshi</span><span class="tag">Every hearing, every file — one place.</span></div>
+      <div><span class="en">Pak Lawyer's AI-Notebook</span><span class="tag">Every hearing, every file — one place.</span></div>
     </div>
     <div class="tb-right">
       <button class="icon-btn" id="aiKeyBtn" title="AI key">🔑</button>
@@ -551,7 +551,7 @@ details.help a{color:var(--brass)}
       <button data-view="vPolicy">📑 Policies</button>
       <button data-view="vSettings">⚙︎ Settings</button>
       <button id="sideAiKey" class="side-key">🔑 Add / edit AI key</button>
-      <div class="nav-foot"><span class="logoSlot" data-size="30"></span><div>Pak Lawyer's AI Munshi<span>by TrendCatcher-Kech</span></div></div>
+      <div class="nav-foot"><span class="logoSlot" data-size="30"></span><div>Pak Lawyer's AI-Notebook<span>by TrendCatcher-Kech</span></div></div>
     </nav>
 
     <main>
@@ -1044,7 +1044,7 @@ function readFiles(fileList,cb){
     r.onerror=()=>{if(++done===arr.length)cb(out);};r.readAsDataURL(f);
   });
 }
-function logoSVG(size){size=size||34;return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tckg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0C6E48"/><stop offset="1" stop-color="#0E7C76"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#tckg)"/><path d="M12 37h24" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"/><polyline points="11,31 20,23 27,28 37,15" fill="none" stroke="#F4D58D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37" cy="15" r="3.4" fill="#FFB454"/></svg>`;}
+function logoSVG(size){size=size||34;return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tckg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0C6E48"/><stop offset="1" stop-color="#0E7C76"/></linearGradient><linearGradient id="tckt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9A24B"/><stop offset="1" stop-color="#8A5A22"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#tckg)"/><g fill="none" stroke="#1E5C3A" stroke-opacity=".35" stroke-width="1"><path d="M8 40h32"/></g><path d="M22.5 41c-.4-7-1-14-2.3-19.5" fill="none" stroke="url(#tckt)" stroke-width="3" stroke-linecap="round"/><path d="M24 41c.4-7 1-14 2.3-19.5" fill="none" stroke="url(#tckt)" stroke-width="2.4" stroke-linecap="round"/><g fill="none" stroke="#2FB86A" stroke-width="2.4" stroke-linecap="round"><path d="M23 20C18 16 12 15 8 17c4 .2 8 1.6 12 4.4"/><path d="M23 20C28 16 34 15 38 17c-4 .2-8 1.6-12 4.4"/><path d="M23 19.5C20 13.5 15 10 10 9.5c3.5 2 7 6 10 10.6"/><path d="M23 19.5C26 13.5 31 10 36 9.5c-3.5 2-7 6-10 10.6"/><path d="M23 19c0-4.5 1.5-8.5 0.6-12.5C22 11 22 15 23 19z"/></g><g fill="#F4D58D"><circle cx="22" cy="13" r="1.5"/><circle cx="25.5" cy="13.5" r="1.5"/><circle cx="20.5" cy="16" r="1.4"/><circle cx="27" cy="16.5" r="1.4"/><circle cx="23.5" cy="15" r="1.4"/></g><circle cx="14" cy="20" r="1.4" fill="#FFB454"/><circle cx="33" cy="20" r="1.4" fill="#FFB454"/></svg>`;}
 function fillLogos(){document.querySelectorAll('.logoSlot').forEach(el=>{if(!el.dataset.done){el.innerHTML=logoSVG(+el.dataset.size||34);el.dataset.done="1";}});}
 
 const DB={
@@ -1083,7 +1083,7 @@ function sealSVG(withText){
   const base=`<circle class="disc" cx="40" cy="40" r="37"/><circle class="ring" cx="40" cy="40" r="37"/><circle class="ring2" cx="40" cy="40" r="32.5"/>`;
   const scales=`<g class="scale"><line x1="40" y1="26" x2="40" y2="56"/><circle class="dot" cx="40" cy="24" r="2.4" stroke="none"/><line x1="24" y1="33" x2="56" y2="33"/><line x1="24" y1="33" x2="19" y2="44"/><line x1="24" y1="33" x2="29" y2="44"/><path d="M19 44a5 5 0 0 0 10 0"/><line x1="56" y1="33" x2="51" y2="44"/><line x1="56" y1="33" x2="61" y2="44"/><path d="M51 44a5 5 0 0 0 10 0"/><line x1="31" y1="56" x2="49" y2="56"/></g>`;
   let text="";
-  if(withText)text=`<defs><path id="sp" d="M40,40 m-28,0 a28,28 0 1,1 56,0 a28,28 0 1,1 -56,0"/></defs><text class="sealtext"><textPath href="#sp" startOffset="0%">PAK LAWYER'S AI MUNSHI · PAKISTAN · LEGAL · </textPath></text>`;
+  if(withText)text=`<defs><path id="sp" d="M40,40 m-28,0 a28,28 0 1,1 56,0 a28,28 0 1,1 -56,0"/></defs><text class="sealtext"><textPath href="#sp" startOffset="0%">PAK LAWYER'S AI-NOTEBOOK · PAKISTAN · LEGAL · </textPath></text>`;
   return base+text+scales;
 }
 ["sealAuth","sealAdmin"].forEach(id=>{if($(id))$(id).innerHTML=sealSVG(id==="sealAuth");});
@@ -1102,7 +1102,7 @@ $("rgBtn").onclick=()=>{
   DB.saveUsers(users);DB.setSession(email);state.email=email;
   localStorage.setItem(DB.key("profile"),JSON.stringify({fullName:name}));
   cloudPush();
-  toast("Welcome to Pak Lawyer's AI Munshi");route();
+  toast("Welcome to Pak Lawyer's AI-Notebook");route();
 };
 $("liBtn").onclick=async()=>{
   const id=$("liEmail").value.trim().toLowerCase(),pass=$("liPass").value;
@@ -1150,7 +1150,7 @@ $("adGen").onclick=()=>{
       ${email?`<button class="btn sm" id="adMail">Email to ${esc(email)}</button>`:""}
     </div>`;
   $("adCopy").onclick=()=>navigator.clipboard?.writeText(code).then(()=>toast("Copied"),()=>toast(code));
-  if(email)$("adMail").onclick=()=>{const sub="Your Pak Lawyer's AI Munshi unlock code";const body=`Assalam o Alaikum,\n\nThank you for subscribing to Pak Lawyer's AI Munshi (${PLANS[plan].label}).\n\nYour unlock code:\n${code}\n\nOpen the app → Settings → Subscribe / renew → paste this code → Unlock saving.\nIt is valid until ${fmtDate(expiresAt)}.\n\nRegards,\n${COMPANY}`;window.open(`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
+  if(email)$("adMail").onclick=()=>{const sub="Your Pak Lawyer's AI-Notebook unlock code";const body=`Assalam o Alaikum,\n\nThank you for subscribing to Pak Lawyer's AI-Notebook (${PLANS[plan].label}).\n\nYour unlock code:\n${code}\n\nOpen the app → Settings → Subscribe / renew → paste this code → Unlock saving.\nIt is valid until ${fmtDate(expiresAt)}.\n\nRegards,\n${COMPANY}`;window.open(`mailto:${email}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
 };
 function renderAdminUsers(){
   const users=Object.values(DB.users());
@@ -1341,7 +1341,7 @@ function fireReminders(){
   const rems=state.reminders.filter(r=>{const d=daysFromToday(r.date);return d!=null&&d>=0&&d<=2;}).map(r=>`🔔 ${r.text} · ${fmtDate(r.date)}`);
   const soon=[...hearings,...rems];
   const key="wakalat.remind.fired."+todayISO();
-  if(soon.length&&localStorage.getItem(key)!=="1"){new Notification("Pak Lawyer's AI Munshi — coming up",{body:soon.join("\n")});localStorage.setItem(key,"1");}
+  if(soon.length&&localStorage.getItem(key)!=="1"){new Notification("Pak Lawyer's AI-Notebook — coming up",{body:soon.join("\n")});localStorage.setItem(key,"1");}
 }
 function renderAlerts(){
   const all=[];
@@ -1621,8 +1621,8 @@ $("subClose").onclick=()=>$("subOverlay").classList.remove("on");
 $("subOverlay").addEventListener("click",e=>{if(e.target===$("subOverlay"))$("subOverlay").classList.remove("on");});
 $("planPick").addEventListener("click",e=>{const p=e.target.closest(".plan");if(!p)return;chosenPlan=p.dataset.plan;[...$("planPick").children].forEach(x=>x.classList.toggle("on",x===p));});
 function logRequest(){const u=DB.users()[state.email]||{};const reqs=DB.reqs();reqs.push({name:state.profile?.fullName||u.name||"",email:state.email,phone:u.phone||"",ref:refCode(),plan:PLANS[chosenPlan].label,at:new Date().toISOString()});DB.saveReqs(reqs);}
-$("waBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const msg=`Assalam o Alaikum, I want the Pak Lawyer's AI Munshi ${pl.label} plan (${pl.price}).\nName: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nI will send the payment receipt.`;window.open(`https://wa.me/${PAY.WHATSAPP}?text=${encodeURIComponent(msg)}`,"_blank","noopener");};
-$("emailReqBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const sub="Pak Lawyer's AI Munshi subscription request";const body=`Name: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nPlan: ${pl.label} (${pl.price})\n\nI have paid / will pay and attach the receipt.`;window.open(`mailto:${PAY.EMAIL}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
+$("waBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const msg=`Assalam o Alaikum, I want the Pak Lawyer's AI-Notebook ${pl.label} plan (${pl.price}).\nName: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nI will send the payment receipt.`;window.open(`https://wa.me/${PAY.WHATSAPP}?text=${encodeURIComponent(msg)}`,"_blank","noopener");};
+$("emailReqBtn").onclick=()=>{logRequest();const pl=PLANS[chosenPlan];const sub="Pak Lawyer's AI-Notebook subscription request";const body=`Name: ${state.profile?.fullName||""}\nEmail: ${state.email}\nReference: ${refCode()}\nPlan: ${pl.label} (${pl.price})\n\nI have paid / will pay and attach the receipt.`;window.open(`mailto:${PAY.EMAIL}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`);};
 $("unlockBtn").onclick=()=>{const res=verifyUnlock($("unlockInput").value,refCode());if(!res.ok){toast(res.msg);return;}state.sub={plan:res.plan,activatedAt:todayISO(),expiresAt:res.expiresAt};DB.set("sub",state.sub);$("subOverlay").classList.remove("on");$("trialBanner").classList.add("hidden");renderSettings();toast("Unlocked — you can save now");};
 function signOut(){sessionStorage.removeItem("pulled");DB.setSession(null);state.email=null;["liEmail","liPass","rgName","rgEmail","rgPhone","rgPass"].forEach(i=>{if($(i))$(i).value="";});route();toast("Signed out");}
 
@@ -1793,7 +1793,7 @@ window.dlOne=(kind,id)=>{
   else if(kind==="clientc"){rec=state.clients.find(c=>c.id===id);fname="client";}
   else{rec=(kind==="mine"?state.mine:state.client).find(c=>c.id===id);fname=kind+"-case";}
   if(!rec)return;
-  const blob=new Blob([JSON.stringify({type:kind,record:rec,app:"Pak Lawyer's AI Munshi",exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({type:kind,record:rec,app:"Pak Lawyer's AI-Notebook",exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${fname}-${String(rec.title||rec.name||rec.cite||"record").replace(/[^a-z0-9]+/gi,"-").slice(0,40)}.json`;a.click();toast("Downloaded");
 };
 
@@ -1829,14 +1829,14 @@ const HELP=[
 function renderHelp(){$("helpWrap").innerHTML=HELP.map(h=>`<details class="help" style="margin-bottom:8px"><summary>${esc(h[0])}</summary><div style="margin-top:8px;line-height:1.6">${esc(h[1])}</div></details>`).join("");}
 
 const POLICIES=[
- ["Privacy Policy","Your data (cases, records, files and AI key) is stored locally in your browser on your device. Pak Lawyer's AI Munshi / "+COMPANY+" does not host or collect this data on a server. Features you use call third-party services: Google Gemini (AI), Google News and public RSS proxies, and OCR libraries — these receive only the content you submit for that action. Back up regularly; clearing your browser clears your data."],
+ ["Privacy Policy","Your data (cases, records, files and AI key) is stored locally in your browser on your device. Pak Lawyer's AI-Notebook / "+COMPANY+" does not host or collect this data on a server. Features you use call third-party services: Google Gemini (AI), Google News and public RSS proxies, and OCR libraries — these receive only the content you submit for that action. Back up regularly; clearing your browser clears your data."],
  ["Terms of Service","The app is a productivity tool for legal professionals and does not provide legal advice. AI output (including AI Legal Analysis scores) may be inaccurate and must be verified by a qualified lawyer before any use. You are responsible for the accuracy and lawful handling of any client data you enter. Subscriptions unlock saving; manual payments are verified by "+COMPANY+" before an unlock code is issued."],
  ["Refund Policy","Plans are billed monthly or six-monthly. Because activation is manual and immediate after verification, fees are generally non-refundable once an unlock code has been issued, except where required by law or in case of a verified billing error. Raise any dispute within 7 days."],
  ["Disclaimer","Using this app creates no lawyer-client relationship. Case-law, news and AI responses are assistance only and are not a substitute for professional judgment, official records or certified copies."],
  ["Data & security","All records live in your browser's local storage and attachments are embedded in your backups. Keep your device secure and your AI key private."],
  ["Contact",COMPANY+" — Email: "+PAY.EMAIL+" · WhatsApp: "+PAY.WHATSAPP+"."],
 ];
-function renderPolicy(){$("policyWrap").innerHTML=`<div class="info-card">These policies are provided by <b>${esc(COMPANY)}</b>, the publisher of Pak Lawyer's AI Munshi.</div>`+POLICIES.map(pl=>`<details class="help" style="margin-bottom:8px"><summary>${esc(pl[0])}</summary><div style="margin-top:8px;line-height:1.6">${esc(pl[1])}</div></details>`).join("");}
+function renderPolicy(){$("policyWrap").innerHTML=`<div class="info-card">These policies are provided by <b>${esc(COMPANY)}</b>, the publisher of Pak Lawyer's AI-Notebook.</div>`+POLICIES.map(pl=>`<details class="help" style="margin-bottom:8px"><summary>${esc(pl[0])}</summary><div style="margin-top:8px;line-height:1.6">${esc(pl[1])}</div></details>`).join("");}
 
 $("supaSave").onclick=()=>{const url=$("supaUrl").value.trim().replace(/\/$/,"");const key=$("supaKey").value.trim();if(!url||!key){toast("Enter both URL and key");return;}localStorage.setItem("wakalat.supa",JSON.stringify({url,key}));setSyncStatus("Connecting…");cloudPush().then(ok=>toast(ok?"Connected & synced":"Saved — but sync failed, check setup"));};
 $("supaUp").onclick=()=>{if(!supaCfg()){toast("Connect first");return;}setSyncStatus("Syncing up…");cloudPush();};
@@ -1881,8 +1881,7 @@ function recName(r){return String(r.title||r.name||r.cite||"record").replace(/[^
 window.shareWA=(kind,id)=>{const r=findRec(kind,id);if(!r)return;let n="";if(kind==="clientc"&&(r.whatsapp||r.mobile)){n=(r.whatsapp||r.mobile).replace(/\D/g,"");if(n.startsWith("0"))n="92"+n.slice(1);}window.open("https://wa.me/"+n+"?text="+encodeURIComponent(recToText(kind,r)),"_blank","noopener");};
 window.shareEmail=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const to=(kind==="clientc"&&r.email)?r.email:"";window.open(`mailto:${to}?subject=${encodeURIComponent(r.title||r.name||"Record")}&body=${encodeURIComponent(recToText(kind,r))}`);};
 function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-window.exportDoc=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const html=`<html><head><meta charset="utf-8"></head><body>${recToHTML(kind,r)}<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(e){})});}</script>
-</body></html>`;dl(new Blob([html],{type:"application/msword"}),recName(r)+".doc");toast("Word file downloaded");};
+window.exportDoc=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const html=`<html><head><meta charset="utf-8"></head><body>${recToHTML(kind,r)}</body></html>`;dl(new Blob([html],{type:"application/msword"}),recName(r)+".doc");toast("Word file downloaded");};
 window.exportPdf=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const w=window.open("","_blank");if(!w){toast("Allow pop-ups to export PDF");return;}w.document.write(`<html><head><meta charset="utf-8"><title>${esc(recName(r))}</title></head><body>${recToHTML(kind,r)}<scr`+`ipt>window.onload=function(){window.print();}<\/scr`+`ipt></body></html>`);w.document.close();};
 window.dlMenu=(kind,id)=>{const c=prompt("Type a number to download:\n1 = JSON (for transfer/restore)\n2 = PDF\n3 = Word (.doc)","1");if(c==="1")dlOne(kind,id);else if(c==="2")exportPdf(kind,id);else if(c==="3")exportDoc(kind,id);};
 
@@ -2777,5 +2776,123 @@ ${txt.slice(0,15000)}`;
   },350);
 })();
 </script>
+<script>
+/* ===== Mega AI box — universal intake: analyse → suggest → prefill/generate ===== */
+(function(){
+  function init(){
+    const home=document.getElementById("vHome"); if(!home){return setTimeout(init,300);}
+    if(document.getElementById("megaBox"))return;
+    const css=document.createElement("style");
+    css.textContent=`
+    #megaBox{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(160deg,var(--green-tint),var(--card) 60%);box-shadow:var(--shadow);padding:16px;margin:4px 0 18px}
+    #megaBox .mh{display:flex;align-items:center;gap:9px;font-family:'Marcellus',serif;font-size:16px;margin-bottom:4px}
+    #megaBox .mh .sp{font-size:11px;font-weight:600;font-family:'Sora',sans-serif;color:var(--ink-faint)}
+    #megaBox textarea{width:100%;min-height:74px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font-size:14px;resize:vertical}
+    #megaBox .mrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+    #megaCard{margin-top:14px}
+    .mg-card{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:var(--r-sm);background:var(--paper);box-shadow:var(--shadow);padding:14px;animation:mgpop .25s ease}
+    @keyframes mgpop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .mg-card .mt{font-family:'Marcellus',serif;font-size:15px;margin-bottom:4px}
+    .mg-card .ms{font-size:13px;color:var(--ink-soft);margin-bottom:10px}
+    .mg-sugg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+    .mg-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:22px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+    .mg-chip:hover{border-color:var(--teal);background:var(--green-tint)}
+    .mg-chip .ic{font-size:15px}
+    .mg-gen{margin-top:12px}
+    .mg-gen h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);margin:10px 0 5px}
+    .mg-kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px}
+    .mg-kv .kv{font-size:12.5px;border:1px solid var(--line-soft);border-radius:7px;padding:7px 9px;background:var(--card)}
+    .mg-kv .kv b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint);margin-bottom:2px}
+    `;
+    document.head.appendChild(css);
+    const box=document.createElement("div"); box.id="megaBox";
+    box.innerHTML=`<div class="mh">✨ Ask AI <span class="sp">— type anything; I'll turn it into a case, hearing, client, judge or peshi</span></div>
+      <textarea id="megaIn" placeholder="e.g. New bail matter for Ali Khan, FIR 122/24 PS Saddar u/s 302, next hearing 5 July before Sessions Judge Ahmed who seems strict; opposing counsel Mr. Raza…"></textarea>
+      <div class="mrow"><button class="btn primary" id="megaGo" type="button">Analyse</button><button class="btn sm" id="megaClear" type="button">Clear</button><span class="hint" id="megaHint" style="margin:0">Needs your AI key (🔑).</span></div>
+      <div id="megaCard"></div>`;
+    const ph=home.querySelector(".page-head");
+    if(ph)ph.after(box); else home.insertBefore(box,home.firstChild);
+    if(window.state&&state.aikey)document.getElementById("megaHint").textContent="Tip: include names, FIR/case no., dates, court & judge — I'll fill the fields for you.";
+
+    const ICON={case:"📁",hearing:"⚖︎",peshi:"📅",client:"🧑‍💼",judge:"👨‍⚖️"};
+    const LABELT={case:"case",hearing:"hearing",peshi:"peshi (hearing date)",client:"client",judge:"judge"};
+    let last=null;
+
+    function setVal(id,v){const e=document.getElementById(id);if(e&&v!=null&&String(v).trim()!=="")e.value=Array.isArray(v)?v.join(", "):String(v);}
+    const D=o=>o||{};
+
+    function fillCase(extraNext){const c=D(last.case);go("vClient");openCase("client",null);setTimeout(()=>{
+      setVal("cTitle",c.title);setVal("cNumber",c.number);setVal("cCourt",c.court);setVal("cCategory",c.category);setVal("cParty",c.party);setVal("cClient",c.client);setVal("cNext",dateOK(c.nextHearing)||extraNext);setVal("cNotes",c.notes);const a=document.getElementById("cAiSrc");if(a)a.value=document.getElementById("megaIn").value;toast("Case pre-filled — review & save");},150);}
+    function fillClient(){const c=D(last.client);openClientC(null);setTimeout(()=>{
+      setVal("ccName",c.name);setVal("ccMobile",c.mobile);setVal("ccCnic",c.cnic);setVal("ccLoc",c.location);setVal("ccAddr",c.address);setVal("ccNotes",c.notes);toast("Client pre-filled — review & save");},150);}
+    function fillJudge(){const j=D(last.judge);if(!window.openBench){toast("Open Judges tab once, then retry");return;}go("vBench");openBench(null);setTimeout(()=>{
+      const m={name:"name",designation:"designation",court:"court",caseRef:"caseRef",perspective:"perspective",priorRemarks:"priorRemarks",strategy:"strategy",opposingParty:"opposingParty",opposingCounsel:"opposingCounsel",io:"io",theirEvidence:"theirEvidence",leaning:"leaning"};
+      Object.keys(m).forEach(k=>setVal("bn_"+m[k],j[k]));toast("Judge pre-filled — review & save");},170);}
+    function fillHearing(){const h=D(last.hearing);go("vClient");openCase("client",null);setTimeout(()=>{
+      setVal("cTitle",h.caseTitle||D(last.case).title);setVal("cCourt",h.court||D(last.case).court);setVal("cNext",dateOK(h.date));setVal("cNotes",h.notes||("Hearing: "+(h.purpose||"")));const a=document.getElementById("cAiSrc");if(a)a.value=document.getElementById("megaIn").value;toast("Hearing pre-filled on a case — set date & save");},150);}
+    function dateOK(d){return /^\d{4}-\d{2}-\d{2}$/.test(d||"")?d:"";}
+
+    function route(type){
+      if(type==="case")fillCase();
+      else if(type==="client")fillClient();
+      else if(type==="judge")fillJudge();
+      else if(type==="hearing"||type==="peshi")fillHearing();
+    }
+
+    function genCard(type){
+      const obj=D(last[type]||last[type==="peshi"?"hearing":type]);
+      const entries=Object.keys(obj).filter(k=>obj[k]&&String(obj[k]).trim());
+      if(!entries.length){toast("Nothing to generate for "+LABELT[type]);return;}
+      const kv=entries.map(k=>`<div class="kv"><b>${esc(k.replace(/([A-Z])/g,' $1'))}</b>${esc(String(obj[k]))}</div>`).join("");
+      const wrap=document.createElement("div");wrap.className="mg-gen";
+      wrap.innerHTML=`<h5>Generated ${esc(LABELT[type])} — review the fields</h5><div class="mg-kv">${kv}</div>
+        <div class="mrow"><button class="btn primary sm" id="mgUse">＋ Add this ${esc(type)}</button></div>`;
+      const host=document.querySelector("#megaCard .mg-card");host.querySelectorAll(".mg-gen").forEach(n=>n.remove());host.appendChild(wrap);
+      document.getElementById("mgUse").onclick=()=>route(type);
+    }
+
+    function renderCard(a){
+      last=a;
+      const sugg=(a.suggestions||[]).filter(s=>s&&s.type);
+      if(!sugg.length){["case","hearing","client","judge","peshi"].forEach(t=>{if(a[t]&&Object.values(a[t]).some(v=>v&&String(v).trim()))sugg.push({type:t,label:"Add "+t});});}
+      const chips=sugg.map(s=>`<span class="mg-chip" data-go="${esc(s.type)}"><span class="ic">${ICON[s.type]||"＋"}</span>${esc(s.label||("Add "+s.type))}</span>`).join("");
+      const genchips=sugg.map(s=>`<span class="mg-chip" data-gen="${esc(s.type)}" style="border-style:dashed">⚙ Generate ${esc(s.type)} card</span>`).join("");
+      document.getElementById("megaCard").innerHTML=`<div class="mg-card"><div class="mt">${esc(a.title||"AI reading")}</div><div class="ms">${esc(a.summary||"")}</div>
+        <div class="mg-sugg">${chips||'<span class="hint" style="margin:0">No record detected — try adding names, a case no. or a date.</span>'}</div>
+        ${genchips?`<div class="mg-sugg">${genchips}</div>`:""}</div>`;
+      document.querySelectorAll("#megaCard [data-go]").forEach(el=>el.onclick=()=>route(el.dataset.go));
+      document.querySelectorAll("#megaCard [data-gen]").forEach(el=>el.onclick=()=>genCard(el.dataset.gen));
+    }
+
+    async function analyse(){
+      if(!state.aikey){toast("Add your AI key (🔑)");return;}
+      const txt=(document.getElementById("megaIn").value||"").trim();
+      if(txt.length<6){toast("Type a few words first");return;}
+      const btn=document.getElementById("megaGo"),o=btn.textContent;btn.disabled=true;btn.textContent="Analysing…";
+      document.getElementById("megaCard").innerHTML=`<div class="la-loading"><span class="la-spin"></span> Reading what you wrote…</div>`;
+      const prompt=`You are an intake assistant for a Pakistani lawyer's app. Read the user's note and decide which record(s) it should become: a case, a hearing, a peshi (hearing date), a client, and/or a judge profile. Extract fields. Return ONLY valid JSON, "" when unknown, NEVER invent. Schema:
+{
+ "title":"short heading",
+ "summary":"one sentence on what this is",
+ "suggestions":[{"type":"case|hearing|peshi|client|judge","label":"e.g. Add case"}],
+ "case":{"title":"","number":"FIR/case no.","court":"","category":"Criminal/Civil/Family…","party":"opposing party","client":"client name","nextHearing":"YYYY-MM-DD","notes":""},
+ "hearing":{"caseTitle":"","court":"","date":"YYYY-MM-DD","purpose":"","notes":""},
+ "client":{"name":"","mobile":"","cnic":"","location":"","address":"","notes":""},
+ "judge":{"name":"","designation":"","court":"","caseRef":"","perspective":"","priorRemarks":"","strategy":"","opposingParty":"","opposingCounsel":"","io":"","theirEvidence":"","leaning":"For/Neutral/Against/Unclear"}
+}
+Only include a type in "suggestions" if the note actually contains info for it. Dates as YYYY-MM-DD.
+NOTE:
+${txt.slice(0,6000)}`;
+      try{ const a=parseJSON(await geminiCall(prompt,true)); renderCard(a); }
+      catch(e){ document.getElementById("megaCard").innerHTML=`<div class="info-card">AI error: ${esc(e.message=="no-key"?"add your key (🔑)":e.message)}</div>`; }
+      btn.disabled=false;btn.textContent=o;
+    }
+    document.getElementById("megaGo").onclick=analyse;
+    document.getElementById("megaClear").onclick=()=>{document.getElementById("megaIn").value="";document.getElementById("megaCard").innerHTML="";last=null;};
+  }
+  init();
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(e){})});}</script>
 </body>
 </html>
