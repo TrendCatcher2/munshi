@@ -418,6 +418,33 @@ details.help a{color:var(--brass)}
 @keyframes slogShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @media(max-width:760px){.tb-slogan span{font-size:11px;padding:5px 11px}}
 @media(max-width:520px){.tb-slogan{display:none}}
+/* brand flourish */
+.tb-logo{position:relative;display:inline-flex;flex:none}
+.tb-logo .dates{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.tb-logo .dates i{position:absolute;top:58%;width:5px;height:8px;border-radius:50% 50% 55% 55%;background:radial-gradient(circle at 35% 30%,#d99a4a,#5a2e0c);opacity:0}
+.tb-logo:hover .dates i{animation:dateDrop 1.15s ease-in forwards}
+.tb-logo .dates i:nth-child(1){left:22%;animation-delay:0s}
+.tb-logo .dates i:nth-child(2){left:42%;animation-delay:.13s}
+.tb-logo .dates i:nth-child(3){left:58%;animation-delay:.27s}
+.tb-logo .dates i:nth-child(4){left:72%;animation-delay:.42s}
+.tb-logo .dates i:nth-child(5){left:34%;animation-delay:.58s}
+@keyframes dateDrop{0%{opacity:0;transform:translateY(-3px) scale(.65)}18%{opacity:1}100%{opacity:0;transform:translateY(22px) scale(1)}}
+.brand-name{position:relative;display:flex;flex-direction:column;min-width:0;transform:rotate(-1.5deg);transform-origin:top left;transition:transform .3s}
+.tb-brand:hover .brand-name{transform:rotate(0)}
+.tb-brand .en{text-shadow:0 0 10px rgba(255,160,60,.4),0 1px 2px rgba(0,0,0,.4);transition:text-shadow .3s}
+.tb-brand:hover .en{text-shadow:0 0 16px rgba(255,184,80,.85),0 0 30px rgba(255,140,40,.45)}
+.brand-sub{position:relative;display:block;height:14px}
+.brand-sub .tag,.brand-sub .brand-slogan{position:absolute;left:0;top:0;white-space:nowrap;transition:opacity .3s}
+.brand-sub .brand-slogan{opacity:0;font-family:'Marcellus',serif;font-style:italic;font-size:11px;color:#ffd9a0;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.tb-brand:hover .brand-sub .tag{opacity:0}
+.tb-brand:hover .brand-sub .brand-slogan{opacity:1}
+/* bottom hanging credit */
+.credit-foot{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);z-index:45;pointer-events:none}
+.credit-foot span{display:inline-block;pointer-events:auto;font-family:'Marcellus',serif;font-size:11px;color:#fff;padding:4px 14px;border-radius:20px;background:linear-gradient(120deg,#0A5536,#119C7A,#5e2410,#c2521d);background-size:300% 300%;animation:slogShift 9s ease infinite,creditSwing 4.5s ease-in-out infinite;box-shadow:0 7px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.18);border:1px solid rgba(255,184,96,.4);transform-origin:top center;opacity:.9}
+.credit-foot span:hover{opacity:1}
+.credit-foot span b{color:#FFD9A0;font-weight:400}
+@keyframes creditSwing{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@media(max-width:520px){.credit-foot span{font-size:10px;padding:3px 11px}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
@@ -528,8 +555,8 @@ details.help a{color:var(--brass)}
 <div id="appShell" class="hidden">
   <div class="topbar">
     <div class="tb-brand">
-      <span class="logoSlot" data-size="34"></span>
-      <div><span class="en">Pak Lawyer's AI-Notebook</span><span class="tag">Every hearing, every file — one place.</span></div>
+      <span class="tb-logo"><span class="logoSlot" data-size="34"></span><span class="dates"><i></i><i></i><i></i><i></i><i></i></span></span>
+      <div class="brand-name"><span class="en">Pak Lawyer's AI-Notebook</span><span class="brand-sub"><span class="tag">Every hearing, every file — one place.</span><span class="brand-slogan">“Be honest, and follow the law.”</span></span></div>
     </div>
     <div class="tb-slogan" aria-hidden="true"><span>⚖ Every case, in order.</span></div>
     <div class="tb-right">
@@ -709,7 +736,7 @@ details.help a{color:var(--brass)}
     </section>
 
     <section class="view" id="vMedia">
-      <div class="page-head"><div><h2>Media &amp; books</h2><div class="sub">Films, series and reading that every lawyer enjoys. Tap to open.</div></div></div>
+      <div class="page-head"><div><h2>Media &amp; books</h2><div class="sub">The best free, legal places to watch, listen and read — no paywalls. Tap to open.</div></div></div>
       <div id="mediaWrap"></div>
     </section>
 
@@ -1359,25 +1386,26 @@ function renderLearn(){
   $("learnWrap").innerHTML=LEARN.map(sec=>`<div class="sec-head"><span class="ic" style="background:${sec.a}">🎓</span><div><h3>${esc(sec.g)}</h3></div></div><div class="tiles">${sec.items.map(i=>`<a class="tile" style="--accent:${sec.a}" href="${i.u}" target="_blank" rel="noopener"><div class="tk">Learn</div><div class="tt">${esc(i.t)}</div><div class="td">${esc(i.d)}</div><span class="tgo">Open ›</span></a>`).join("")}</div>`).join("");
 }
 const MEDIA=[
-  {g:"Films every lawyer should watch",a:"var(--red)",items:[
-    {t:"To Kill a Mockingbird",d:"Justice, race & courage (1962)",u:"https://www.imdb.com/find/?q=To%20Kill%20a%20Mockingbird"},
-    {t:"12 Angry Men",d:"Reasonable doubt, deliberation (1957)",u:"https://www.imdb.com/find/?q=12%20Angry%20Men"},
-    {t:"A Few Good Men",d:"Military court-martial drama",u:"https://www.imdb.com/find/?q=A%20Few%20Good%20Men"}
+  {g:"Watch free & legal",a:"var(--red)",items:[
+    {t:"Internet Archive — feature films",d:"Thousands of free public-domain movies",u:"https://archive.org/details/feature_films",free:1},
+    {t:"YouTube — law documentaries",d:"Full court & justice documentaries, free",u:"https://www.youtube.com/results?search_query=law+justice+documentary+full",free:1},
+    {t:"Internet Archive — court & law",d:"Trials, lectures & legal history",u:"https://archive.org/search?query=law%20court",free:1}
   ]},
-  {g:"Series to binge",a:"var(--indigo)",items:[
-    {t:"Suits",d:"Corporate law & sharp dialogue",u:"https://www.imdb.com/find/?q=Suits"},
-    {t:"Better Call Saul",d:"A lawyer's making & unmaking",u:"https://www.imdb.com/find/?q=Better%20Call%20Saul"},
-    {t:"The Good Wife",d:"Litigation & politics",u:"https://www.imdb.com/find/?q=The%20Good%20Wife"}
+  {g:"Free law lectures & courses",a:"var(--indigo)",items:[
+    {t:"YouTube — Pakistan law full courses",d:"CrPC, CPC & Constitution explained free",u:"https://www.youtube.com/results?search_query=Pakistan+law+full+course+lecture",free:1},
+    {t:"Advocacy & cross-examination",d:"Free skills lectures from practitioners",u:"https://www.youtube.com/results?search_query=cross+examination+advocacy+lecture",free:1},
+    {t:"Legal English & drafting",d:"Free professional-writing tutorials",u:"https://www.youtube.com/results?search_query=legal+drafting+english+for+lawyers",free:1}
   ]},
-  {g:"Books & literature",a:"var(--brass)",items:[
-    {t:"The Rule of Law — Tom Bingham",d:"What the rule of law means",u:"https://www.goodreads.com/search?q=The%20Rule%20of%20Law%20Bingham"},
-    {t:"Constitutional Law of Pakistan — Hamid Khan",d:"The standard reference",u:"https://www.goodreads.com/search?q=Constitutional%20Law%20of%20Pakistan%20Hamid%20Khan"},
-    {t:"Letters to a Law Student",d:"For students starting out",u:"https://www.goodreads.com/search?q=Letters%20to%20a%20Law%20Student"}
-  ]},
-  {g:"Free & legal to watch / read",a:"var(--teal)",items:[
-    {t:"Internet Archive — films",d:"Thousands of free public-domain movies",u:"https://archive.org/details/feature_films",free:1},
+  {g:"Read & listen free",a:"var(--brass)",items:[
     {t:"Project Gutenberg — law & classics",d:"60,000+ free e-books",u:"https://www.gutenberg.org/ebooks/search/?query=law",free:1},
-    {t:"Open Library — borrow free",d:"Borrow legal texts online",u:"https://openlibrary.org/search?q=law",free:1}
+    {t:"Open Library — borrow free",d:"Borrow legal texts online, free",u:"https://openlibrary.org/search?q=law",free:1},
+    {t:"LibriVox — free law audiobooks",d:"Public-domain audiobooks, listen free",u:"https://librivox.org/search?q=law&search_form=advanced",free:1},
+    {t:"Wikibooks — Law shelf",d:"Open, free legal textbooks",u:"https://en.wikibooks.org/wiki/Subject:Law",free:1}
+  ]},
+  {g:"Pakistan law — free official sources",a:"var(--teal)",items:[
+    {t:"Pakistan Code — all statutes",d:"Official full text of every law, free",u:"https://pakistancode.gov.pk/",free:1},
+    {t:"Supreme Court — judgments",d:"Latest reported decisions, free",u:"https://www.supremecourt.gov.pk/latest-judgements/",free:1},
+    {t:"Constitution of Pakistan — full text",d:"Read the whole Constitution online, free",u:"https://www.pakistani.org/pakistan/constitution/",free:1}
   ]}
 ];
 function renderMedia(){
@@ -3471,24 +3499,24 @@ ${txt.slice(0,6000)}`;
   if(window.VIEWS&&VIEWS.indexOf(V)<0)VIEWS.push(V);
   let found=null;
   const TYPES=[
-    {k:"cases",arr:"client",ic:"\U0001F4C1",label:"Cases",idp:"c",name:r=>r.title,keys:["title","number","court","category","status","party","client","counsel","next","notes"]},
-    {k:"clients",arr:"clients",ic:"\U0001F9D1",label:"Clients",idp:"cc",name:r=>r.name,keys:["name","mobile","whatsapp","email","cnic","loc","job","addr","notes"]},
-    {k:"accused",arr:"accused",ic:"\U0001F694",label:"Accused",idp:"a",name:r=>r.name,keys:["name","alias","cnic","father","address","contact","occupation","caseRef","role","status","sections","priorRecord","previousCrimes","generalNature","notes"]},
-    {k:"judges",arr:"bench",ic:"\U0001F468\u200D\u2696\uFE0F",label:"Judges",idp:"b",name:r=>r.name,keys:["name","designation","court","reputation","decisionTrend","temperament","strictness","notes"]},
-    {k:"lawyers",arr:"lawyers",ic:"\U0001F4BC",label:"Lawyers",idp:"l",name:r=>r.name,keys:["name","firm","barCouncil","role","practiceAreas","seniority","reputation","courtroomStyle","caseRef","notes"]},
-    {k:"firs",arr:"fir",ic:"\U0001FA7A",label:"FIRs",idp:"f",name:r=>r.title||r.firNo||r.complainant,keys:["firNo","firDate","policeStation","district","complainant","accused","sections","offence","court","nextHearing"]},
+    {k:"cases",arr:"client",ic:"📁",label:"Cases",idp:"c",name:r=>r.title,keys:["title","number","court","category","status","party","client","counsel","next","notes"]},
+    {k:"clients",arr:"clients",ic:"🧑",label:"Clients",idp:"cc",name:r=>r.name,keys:["name","mobile","whatsapp","email","cnic","loc","job","addr","notes"]},
+    {k:"accused",arr:"accused",ic:"🚔",label:"Accused",idp:"a",name:r=>r.name,keys:["name","alias","cnic","father","address","contact","occupation","caseRef","role","status","sections","priorRecord","previousCrimes","generalNature","notes"]},
+    {k:"judges",arr:"bench",ic:"👨\u200D\u2696\uFE0F",label:"Judges",idp:"b",name:r=>r.name,keys:["name","designation","court","reputation","decisionTrend","temperament","strictness","notes"]},
+    {k:"lawyers",arr:"lawyers",ic:"💼",label:"Lawyers",idp:"l",name:r=>r.name,keys:["name","firm","barCouncil","role","practiceAreas","seniority","reputation","courtroomStyle","caseRef","notes"]},
+    {k:"firs",arr:"fir",ic:"🩺",label:"FIRs",idp:"f",name:r=>r.title||r.firNo||r.complainant,keys:["firNo","firDate","policeStation","district","complainant","accused","sections","offence","court","nextHearing"]},
     {k:"judgments",arr:"judge",ic:"\u2696\uFE0F",label:"Judgments",idp:"j",name:r=>r.name||r.cite,keys:["cite","name","court","year","hold","summary","url"]}
   ];
   function paint(){
-    sec.innerHTML=`<div class="page-head"><div><h2>\U0001F4E5 AI Intake \u2014 dump everything at once</h2><div class="sub">Paste or extract a pile of mixed information \u2014 many cases, clients, accused, judges, lawyers, FIRs and hearings together, in any format. The AI sorts it into proper records you add to the right sections in one tap.</div></div></div>
+    sec.innerHTML=`<div class="page-head"><div><h2>📥 AI Intake \u2014 dump everything at once</h2><div class="sub">Paste or extract a pile of mixed information \u2014 many cases, clients, accused, judges, lawyers, FIRs and hearings together, in any format. The AI sorts it into proper records you add to the right sections in one tap.</div></div></div>
       <div class="panel">
         <textarea id="intakeSrc" style="width:100%;min-height:160px" placeholder="Example: Case Khan vs State, FIR 122/24 u/s 302, Sessions Court, next hearing 12 March. Accused Ali Raza, two prior thefts, on bail. Client Bilal 0300-1234567. Judge Mr. Ahmed \u2014 strict, pro-prosecution. Opposing lawyer Mr. Raza, aggressive cross-examiner\u2026"></textarea>
         <div style="margin-top:8px"><input id="intakeFile" type="file" accept="application/pdf,image/*,.docx"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="btn sm" id="intakeExtract" type="button">\U0001F4C4 Extract from file</button>
-          <button class="btn primary" id="intakeRun" type="button">\U0001F916 Analyse &amp; extract</button>
+          <button class="btn sm" id="intakeExtract" type="button">📄 Extract from file</button>
+          <button class="btn primary" id="intakeRun" type="button">🤖 Analyse &amp; extract</button>
         </div>
-        <div class="hint" id="intakeHint" style="margin-top:8px">Uses your AI provider (\U0001F511). Nothing is saved until you tap Add.</div>
+        <div class="hint" id="intakeHint" style="margin-top:8px">Uses your AI provider (🔑). Nothing is saved until you tap Add.</div>
       </div>
       <div id="intakeResults"></div>`;
     document.getElementById("intakeExtract").onclick=extract;
@@ -3506,7 +3534,7 @@ ${txt.slice(0,6000)}`;
     return "You are a Pakistani legal assistant. Read the messy notes below and extract EVERY distinct record into structured JSON. There may be many of each type \u2014 create a separate object for each case, client, accused person, judge, lawyer, FIR and judgment you can identify. Infer obvious links (e.g. put the related case title into an accused's or lawyer's caseRef). Use \"\" for unknown fields and NEVER invent facts. Dates as YYYY-MM-DD where possible.\nReturn ONLY valid JSON with exactly these arrays (include all keys; use [] when a type is absent):\n{\n"+spec+"\n}\nNOTES:\n"+src.slice(0,16000);
   }
   async function run(){
-    if(!state.aikey){toast("Add your AI key (\U0001F511)");return;}
+    if(!state.aikey){toast("Add your AI key (🔑)");return;}
     const src=(document.getElementById("intakeSrc").value||"").trim();
     if(src.length<10){toast("Paste some information first");return;}
     const btn=document.getElementById("intakeRun"),o=btn.textContent;btn.disabled=true;btn.textContent="Analysing\u2026";
@@ -3520,7 +3548,7 @@ ${txt.slice(0,6000)}`;
   }
   function renderResults(total){
     const box=document.getElementById("intakeResults");
-    if(!total){box.innerHTML='<div class="empty"><h3>Nothing found</h3><p>Add more detail and try again, or check your AI key (\U0001F511).</p></div>';return;}
+    if(!total){box.innerHTML='<div class="empty"><h3>Nothing found</h3><p>Add more detail and try again, or check your AI key (🔑).</p></div>';return;}
     let html='<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><b>Found '+total+' record'+(total>1?"s":"")+" \u2014 untick anything you don't want, then add.</b><button class=\"btn primary\" id=\"intakeAdd\">\u2795 Add all selected</button></div></div>";
     TYPES.forEach(t=>{
       const rows=found[t.k]; if(!rows.length)return;
@@ -3565,5 +3593,6 @@ ${txt.slice(0,6000)}`;
 })();
 
 </script>
+<div class="credit-foot"><span>💡 Idea &amp; build by <b>Nazeer Baloch</b></span></div>
 </body>
 </html>
