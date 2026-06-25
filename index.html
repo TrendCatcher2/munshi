@@ -175,7 +175,7 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .primnav button.on .pill{background:rgba(255,255,255,.35)}
 
 .layout{display:flex;align-items:flex-start;max-width:var(--maxw);margin:0 auto;width:100%}
-.sidebar{width:230px;flex:none;position:sticky;top:110px;align-self:flex-start;max-height:calc(100dvh - 110px);overflow-y:auto;padding:16px 12px 24px}
+.sidebar{width:230px;flex:none;position:sticky;top:110px;align-self:flex-start;max-height:calc(100dvh - 110px);overflow-y:auto;padding:16px 12px 24px;background:var(--sand);border-right:1px solid var(--line);min-height:calc(100dvh - 110px)}
 .sidebar .nav-group{font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);padding:14px 12px 6px}
 .sidebar button[data-view]{width:100%;border:none;background:none;text-align:left;padding:10px 12px;border-radius:10px;font-weight:600;font-size:13.5px;color:var(--ink-soft);display:flex;align-items:center;gap:9px;margin-bottom:2px;transition:.13s}
 .sidebar button[data-view]:hover{background:var(--green-tint);color:var(--green-deep)}
@@ -255,7 +255,7 @@ main{flex:1;min-width:0;width:100%;padding:24px 22px 90px}
 .case .next{background:var(--green-tint);border-left:3px solid var(--green);border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--green-deep);margin-top:8px}
 [data-theme="dark"] .case .next{color:var(--green)}
 .case .next.due{background:rgba(155,45,36,.08);border-left-color:var(--red);color:var(--red)}
-.case .rem{background:var(--paper);border:1px solid var(--line-soft);border-radius:7px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);margin-top:8px;font-style:italic}
+.case .rem{background:var(--paper);border:1px solid var(--line-soft);border-radius:7px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);margin-top:8px;font-style:italic;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .case .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .file-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--ink-soft);text-decoration:none}
 .file-chip:hover{border-color:var(--green);color:var(--green)}
@@ -419,32 +419,45 @@ details.help a{color:var(--brass)}
 @media(max-width:760px){.tb-slogan span{font-size:11px;padding:5px 11px}}
 @media(max-width:520px){.tb-slogan{display:none}}
 /* brand flourish */
-.tb-logo{position:relative;display:inline-flex;flex:none}
-.tb-logo .dates{position:absolute;inset:0;pointer-events:none;overflow:visible}
-.tb-logo .dates i{position:absolute;top:58%;width:5px;height:8px;border-radius:50% 50% 55% 55%;background:radial-gradient(circle at 35% 30%,#d99a4a,#5a2e0c);opacity:0}
-.tb-logo:hover .dates i{animation:dateDrop 1.15s ease-in forwards}
-.tb-logo .dates i:nth-child(1){left:22%;animation-delay:0s}
-.tb-logo .dates i:nth-child(2){left:42%;animation-delay:.13s}
-.tb-logo .dates i:nth-child(3){left:58%;animation-delay:.27s}
-.tb-logo .dates i:nth-child(4){left:72%;animation-delay:.42s}
-.tb-logo .dates i:nth-child(5){left:34%;animation-delay:.58s}
+.tb-logo{position:relative;display:flex;flex-direction:column;align-items:center;flex:none;gap:1px}
+.tb-logo .brandco{font-family:'Sora',sans-serif;font-weight:800;font-size:8px;letter-spacing:1.3px;text-transform:uppercase;color:#F4D58D;text-shadow:0 1px 2px rgba(0,0,0,.45);white-space:nowrap;cursor:default;transition:color .25s,text-shadow .25s}
+.tb-logo .brandco:hover{color:#FFE9B8;text-shadow:0 0 8px rgba(244,213,141,.7)}
+.tb-logo .logoBox{display:inline-flex}
+.tb-logo .logoBox svg{transform-origin:50% 22%}
+.tb-logo .logoBox:hover{cursor:pointer}
+.tb-logo .logoBox:hover svg{animation:scaleRock 1.15s ease-in-out}
+@keyframes scaleRock{0%{transform:rotate(0)}18%{transform:rotate(-10deg)}42%{transform:rotate(8deg)}64%{transform:rotate(-5deg)}82%{transform:rotate(3deg)}100%{transform:rotate(0)}}
+.tb-logo .palm{position:absolute;left:50%;top:-3px;transform:translateX(-50%);opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.tb-logo .palm .tree{font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.55))}
+.tb-logo .palm i{position:absolute;top:60%;width:6px;height:9px;border-radius:50% 50% 55% 55%;background:radial-gradient(circle at 35% 30%,#e3a850,#5a2e0c);opacity:0}
+.tb-logo .brandco:hover ~ .palm{opacity:1}
+.tb-logo .brandco:hover ~ .palm i{animation:dateDrop 1.2s ease-in infinite}
+.tb-logo .palm i:nth-child(2){left:28%;animation-delay:0s}
+.tb-logo .palm i:nth-child(3){left:54%;animation-delay:.22s}
+.tb-logo .palm i:nth-child(4){left:40%;animation-delay:.44s}
+.tb-logo .palm i:nth-child(5){left:66%;animation-delay:.66s}
+.tb-logo .palm i:nth-child(6){left:18%;animation-delay:.88s}
 @keyframes dateDrop{0%{opacity:0;transform:translateY(-3px) scale(.65)}18%{opacity:1}100%{opacity:0;transform:translateY(22px) scale(1)}}
 .brand-name{position:relative;display:flex;flex-direction:column;min-width:0;transform:rotate(-1.5deg);transform-origin:top left;transition:transform .3s}
 .tb-brand:hover .brand-name{transform:rotate(0)}
-.tb-brand .en{text-shadow:0 0 10px rgba(255,160,60,.4),0 1px 2px rgba(0,0,0,.4);transition:text-shadow .3s}
-.tb-brand:hover .en{text-shadow:0 0 16px rgba(255,184,80,.85),0 0 30px rgba(255,140,40,.45)}
+.tb-brand .en{color:#FFC24A;text-shadow:0 0 1px rgba(0,0,0,.55),0 0 13px rgba(255,170,45,.6),0 2px 3px rgba(0,0,0,.55);transition:text-shadow .3s,color .3s}
+.tb-brand:hover .en{color:#FFD166;text-shadow:0 0 1px rgba(0,0,0,.5),0 0 20px rgba(255,195,80,.95),0 0 36px rgba(255,150,40,.5)}
 .brand-sub{position:relative;display:block;height:14px}
 .brand-sub .tag,.brand-sub .brand-slogan{position:absolute;left:0;top:0;white-space:nowrap;transition:opacity .3s}
 .brand-sub .brand-slogan{opacity:0;font-family:'Marcellus',serif;font-style:italic;font-size:11px;color:#ffd9a0;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .tb-brand:hover .brand-sub .tag{opacity:0}
 .tb-brand:hover .brand-sub .brand-slogan{opacity:1}
 /* bottom hanging credit */
-.credit-foot{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);z-index:45;pointer-events:none}
-.credit-foot span{display:inline-block;pointer-events:auto;font-family:'Marcellus',serif;font-size:11px;color:#fff;padding:4px 14px;border-radius:20px;background:linear-gradient(120deg,#0A5536,#119C7A,#5e2410,#c2521d);background-size:300% 300%;animation:slogShift 9s ease infinite,creditSwing 4.5s ease-in-out infinite;box-shadow:0 7px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.18);border:1px solid rgba(255,184,96,.4);transform-origin:top center;opacity:.9}
+.credit-foot{position:fixed;left:12px;bottom:8px;z-index:45;pointer-events:none}
+.credit-foot span{display:inline-block;pointer-events:auto;font-family:'Marcellus',serif;font-size:11px;color:#fff;padding:4px 13px;border-radius:18px;background:linear-gradient(120deg,#0A5536,#1a6e4a 45%,#7a3a12);box-shadow:0 6px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.16);border:1px solid rgba(255,184,96,.4);opacity:.92}
 .credit-foot span:hover{opacity:1}
 .credit-foot span b{color:#FFD9A0;font-weight:400}
 @keyframes creditSwing{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
 @media(max-width:520px){.credit-foot span{font-size:10px;padding:3px 11px}}
+.topbar{background:linear-gradient(110deg,#063D27,#0A5E3C 55%,#0F7A5E)}
+.primnav{background:linear-gradient(180deg,var(--sand),var(--card))}
+.case .meta{max-height:3.6em;overflow:hidden}
+.case .cflist,.case .evlist{max-height:7.5em;overflow:hidden}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
@@ -555,7 +568,7 @@ details.help a{color:var(--brass)}
 <div id="appShell" class="hidden">
   <div class="topbar">
     <div class="tb-brand">
-      <span class="tb-logo"><span class="logoSlot" data-size="34"></span><span class="dates"><i></i><i></i><i></i><i></i><i></i></span></span>
+      <span class="tb-logo"><span class="brandco">TrendCatcher</span><span class="logoBox"><span class="logoSlot" data-size="34"></span></span><span class="palm" aria-hidden="true"><span class="tree">🌴</span><i></i><i></i><i></i><i></i><i></i></span></span>
       <div class="brand-name"><span class="en">Pak Lawyer's AI-Notebook</span><span class="brand-sub"><span class="tag">Every hearing, every file — one place.</span><span class="brand-slogan">“Be honest, and follow the law.”</span></span></div>
     </div>
     <div class="tb-slogan" aria-hidden="true"><span>⚖ Every case, in order.</span></div>
