@@ -543,6 +543,7 @@ details.help a{color:var(--brass)}
   <nav class="primnav" id="topNav">
     <button class="on" data-view="vHome">🏠 Home</button>
     <button data-view="vAI">✨ AI</button>
+    <button data-view="vIntake">📥 Intake</button>
     <button data-view="vFir">🩺 FIR</button>
     <button data-view="vAlerts">⚖︎ Hearings <span class="pill hidden" id="alertPill">0</span></button>
     <button data-view="vClient">👤 Cases</button>
@@ -995,6 +996,8 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
   <div class="modal-body">
     <input type="hidden" id="ccId">
     <div class="dsr-imgrow"><div class="dsr-img" id="ccAv">👤</div><div><button class="btn sm" id="ccPhotoBtn" type="button">Upload photo</button><input id="ccPhotoF" type="file" accept="image/*" class="hidden"><div class="hint" style="margin-top:6px">JPG/PNG under 2 MB</div></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px"><button class="btn sm" id="ccAssess" type="button">🩺 AI assessment — position · risks · advice</button></div>
+    <div id="ccAssessBox"></div>
     <div class="field"><label>Full name <span class="req">*</span></label><input id="ccName" placeholder="Client's name"></div>
     <div class="grid2">
       <div class="field"><label>Mobile</label><input id="ccMobile" placeholder="03xx-xxxxxxx"></div>
@@ -1955,7 +1958,7 @@ window.exportDoc=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const html=`<
 window.exportPdf=(kind,id)=>{const r=findRec(kind,id);if(!r)return;const w=window.open("","_blank");if(!w){toast("Allow pop-ups to export PDF");return;}w.document.write(`<html><head><meta charset="utf-8"><title>${esc(recName(r))}</title></head><body>${recToHTML(kind,r)}<scr`+`ipt>window.onload=function(){window.print();}<\/scr`+`ipt></body></html>`);w.document.close();};
 window.dlMenu=(kind,id)=>{const c=prompt("Type a number to download:\n1 = JSON (for transfer/restore)\n2 = PDF\n3 = Word (.doc)","1");if(c==="1")dlOne(kind,id);else if(c==="2")exportPdf(kind,id);else if(c==="3")exportDoc(kind,id);};
 
-let ccLinks=[];let ccPhoto=null;
+let ccLinks=[];let ccPhoto=null;let ccAssess=null;
 function renderCcLinks(){
   const opts=[...state.mine.map(c=>({ref:"mine:"+c.id,name:c.title,t:"My"})),...state.client.map(c=>({ref:"client:"+c.id,name:c.title,t:"Client"})),...state.judge.map(j=>({ref:"judge:"+j.id,name:j.name||j.cite,t:"Judgment"}))];
   if(!opts.length){$("ccLinks").innerHTML=`<span class="hint" style="display:inline">No cases/judgments yet to link.</span>`;return;}
@@ -1967,10 +1970,12 @@ function openClientC(c){
   $("ccName").value=c?.name||"";$("ccMobile").value=c?.mobile||"";$("ccWa").value=c?.whatsapp||"";$("ccEmail").value=c?.email||"";$("ccCnic").value=c?.cnic||"";$("ccLoc").value=c?.loc||"";$("ccJob").value=c?.job||"";$("ccAddr").value=c?.addr||"";$("ccIdeas").value=c?.ideas||"";$("ccNotes").value=c?.notes||"";$("ccTags").value=(c?.tags||[]).join(", ");
   ccLinks=(c?.links||[]).slice();renderCcLinks();
   ccPhoto=c?._photo||null;{const av=$("ccAv");if(av){if(ccPhoto){av.style.backgroundImage="url("+ccPhoto+")";av.textContent="";}else{av.style.backgroundImage="";av.textContent="👤";}}}
+  ccAssess=c?._assess||null;{const b=$("ccAssessBox");if(b)b.innerHTML=ccAssess&&window.assessCardHTML?window.assessCardHTML(ccAssess):"";}
   $("ccOverlay").classList.add("on");
 }
 window.openClientC=openClientC;
 $("addClientC").onclick=()=>openClientC(null);
+$("ccAssess").onclick=async function(){if(!state.aikey){toast("Add your AI key (🔑)");return;}const o=this.textContent;this.disabled=true;this.textContent="Analysing…";try{const obj={name:$("ccName").value,mobile:$("ccMobile").value,email:$("ccEmail").value,cnic:$("ccCnic").value,job:$("ccJob").value,addr:$("ccAddr").value,notes:$("ccNotes").value,ideas:$("ccIdeas").value};const a=await window.dossierAssess("client",obj);ccAssess=a;$("ccAssessBox").innerHTML=window.assessCardHTML(a);toast("Assessment ready — Save to keep it");}catch(e){toast("AI error: "+e.message);}this.disabled=false;this.textContent=o;};
 $("ccPhotoBtn").onclick=()=>$("ccPhotoF").click();
 $("ccPhotoF").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image under 2 MB");return;}const r=new FileReader();r.onload=()=>{ccPhoto=r.result;const av=$("ccAv");av.style.backgroundImage="url("+ccPhoto+")";av.textContent="";};r.readAsDataURL(f);};
 $("ccClose").onclick=()=>$("ccOverlay").classList.remove("on");
@@ -1979,7 +1984,7 @@ $("ccOverlay").addEventListener("click",e=>{if(e.target===$("ccOverlay"))$("ccOv
 $("ccSave").onclick=()=>{
   if(!canSave()){$("ccOverlay").classList.remove("on");openSub();return;}
   const name=$("ccName").value.trim();if(!name){toast("Client name is required");return;}
-  const obj={id:$("ccId").value||("cc"+Date.now()),name,mobile:$("ccMobile").value.trim(),whatsapp:$("ccWa").value.trim(),email:$("ccEmail").value.trim(),cnic:$("ccCnic").value.trim(),loc:$("ccLoc").value.trim(),job:$("ccJob").value.trim(),addr:$("ccAddr").value.trim(),ideas:$("ccIdeas").value.trim(),notes:$("ccNotes").value.trim(),tags:$("ccTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:ccLinks.slice(),_photo:ccPhoto};
+  const obj={id:$("ccId").value||("cc"+Date.now()),name,mobile:$("ccMobile").value.trim(),whatsapp:$("ccWa").value.trim(),email:$("ccEmail").value.trim(),cnic:$("ccCnic").value.trim(),loc:$("ccLoc").value.trim(),job:$("ccJob").value.trim(),addr:$("ccAddr").value.trim(),ideas:$("ccIdeas").value.trim(),notes:$("ccNotes").value.trim(),tags:$("ccTags").value.split(",").map(t=>t.trim()).filter(Boolean),links:ccLinks.slice(),_photo:ccPhoto,_assess:ccAssess};
   const i=state.clients.findIndex(x=>x.id===obj.id);if(i>=0)state.clients[i]=obj;else state.clients.unshift(obj);
   if(DB.set("clients",state.clients)){$("ccOverlay").classList.remove("on");renderClients();renderHome();toast("Client saved");}
 };
@@ -1993,7 +1998,7 @@ function renderClients(){
   $("clientsList").innerHTML=rows.map(c=>{
     const links=(c.links||[]).map(ref=>{const nm=caseNameByRefAny(ref);return nm?`<span class="file-chip">🔗 ${esc(nm)}</span>`:"";}).join("");
     const tags=(c.tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
-    return `<div class="case"><div class="top" style="display:flex;gap:11px;align-items:center">${c._photo?`<div class="dsr-av" style="background-image:url(${c._photo})"></div>`:`<div class="dsr-av">${esc((c.name||"?").charAt(0).toUpperCase())}</div>`}<div style="flex:1"><div class="name">${esc(c.name)}</div></div></div>
+    return `<div class="case"><div class="top" style="display:flex;gap:11px;align-items:center">${c._photo?`<div class="dsr-av" style="background-image:url(${c._photo})"></div>`:`<div class="dsr-av">${esc((c.name||"?").charAt(0).toUpperCase())}</div>`}<div style="flex:1"><div class="name">${esc(c.name)}${c._assess&&window.assessChipHTML?window.assessChipHTML(c._assess):""}</div></div></div>
       <div class="meta">${c.mobile?`<span>📞 ${esc(c.mobile)}</span>`:""}${c.whatsapp?`<span>🟢 ${esc(c.whatsapp)}</span>`:""}${c.email?`<span>✉ ${esc(c.email)}</span>`:""}${c.loc?`<span>📍 ${esc(c.loc)}</span>`:""}</div>
       ${c.addr?`<div class="rem">${esc(c.addr)}</div>`:""}${c.ideas?`<div class="next">💬 ${esc(c.ideas)}</div>`:""}${tags?`<div class="tagrow">${tags}</div>`:""}${links?`<div class="files">${links}</div>`:""}
       <div class="acts" style="flex-wrap:wrap"><button class="btn sm primary" onclick="editClientC('${c.id}')">Open</button>${(c.whatsapp||c.mobile)?`<button class="btn sm" onclick="shareWA('clientc','${c.id}')" title="WhatsApp">📲</button>`:""}${c.mobile?`<a class="btn sm" href="tel:${esc(c.mobile)}" title="Call">📞</a>`:""}${c.email?`<button class="btn sm" onclick="shareEmail('clientc','${c.id}')" title="Email">✉</button>`:""}<button class="btn sm" onclick="dlMenu('clientc','${c.id}')" title="Download">⤓</button><button class="btn sm" onclick="delClientC('${c.id}')" style="color:var(--red)">Delete</button></div></div>`;
@@ -3052,7 +3057,7 @@ ${txt.slice(0,6000)}`;
   window.dossierAssess=async function(kind,rec){
     const fields=Object.keys(rec||{}).filter(k=>k[0]!=="_"&&k!=="id"&&k!=="custom"&&typeof rec[k]==="string"&&rec[k].trim()).map(k=>k+": "+rec[k]).join("\n");
     if(fields.replace(/\s/g,"").length<6)throw new Error("fill some fields first");
-    const P={judge:["a JUDGE","overall read, professional reputation, judicial temperament, apparent leanings or biases, strengths, weaknesses / pressure points, risks when appearing before them, and concrete tips to argue effectively before this judge"],lawyer:["an OPPOSING LAWYER","overall read, professional reputation, courtroom strengths, weaknesses to exploit, likely tactics, the risks they pose, and concrete tips to counter them"],accused:["an ACCUSED person","overall read, character, criminal-history risk, bail / flight risk, strengths and weaknesses of the case around them, evidentiary gaps, and concrete investigative or defence tips"]}[kind]||["a person","an overall assessment"];
+    const P={judge:["a JUDGE","overall read, professional reputation, judicial temperament, apparent leanings or biases, strengths, weaknesses / pressure points, risks when appearing before them, and concrete tips to argue effectively before this judge"],lawyer:["an OPPOSING LAWYER","overall read, professional reputation, courtroom strengths, weaknesses to exploit, likely tactics, the risks they pose, and concrete tips to counter them"],accused:["an ACCUSED person","overall read, character, criminal-history risk, bail / flight risk, strengths and weaknesses of the case around them, evidentiary gaps, and concrete investigative or defence tips"],client:["a CLIENT you represent","an overall read of the client and their matter, the strength of their position, key risks and red flags, what to advise them, the documents or evidence to collect, and realistic expectations"]}[kind]||["a person","an overall assessment"];
     const prompt="You are a senior Pakistani litigator giving a candid, practical assessment of "+P[0]+" for a colleague. Base it ONLY on the profile notes below; never invent facts. Provide: "+P[1]+'.\nReturn ONLY valid JSON with keys: rating (integer 1-5 for how strong / favourable they are; 3 if unclear), overall (1-2 sentences), reputation (string), strengths (array of short strings), weaknesses (array of short strings), risks (array of short strings), tips (array of short strings). Use "" or [] when unknown.\nPROFILE:\n'+fields;
     const a=parseJSON(await geminiCall(prompt,true));
     if(!a||typeof a!=="object")throw new Error("AI returned no assessment");
@@ -3445,6 +3450,118 @@ ${txt.slice(0,6000)}`;
     startAuto();
   }
   if(document.readyState!=="loading")setTimeout(bind,0);else document.addEventListener("DOMContentLoaded",bind);
+})();
+
+</script>
+<script>
+/* ===== AI Intake — dump mixed data, extract many records, add to sections ===== */
+(function(){
+  if(!document.querySelector("main"))return;
+  const css=document.createElement("style");
+  css.textContent=`
+  .intake-row{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+  .intake-row:last-child{border-bottom:none}
+  .intake-row input{margin-top:3px;flex:none}
+  .intake-row .meta{color:var(--ink-soft);font-size:12px}
+  `;
+  document.head.appendChild(css);
+  const V="vIntake";
+  let sec=document.getElementById(V);
+  if(!sec){sec=document.createElement("section");sec.className="view";sec.id=V;document.querySelector("main").appendChild(sec);}
+  if(window.VIEWS&&VIEWS.indexOf(V)<0)VIEWS.push(V);
+  let found=null;
+  const TYPES=[
+    {k:"cases",arr:"client",ic:"\U0001F4C1",label:"Cases",idp:"c",name:r=>r.title,keys:["title","number","court","category","status","party","client","counsel","next","notes"]},
+    {k:"clients",arr:"clients",ic:"\U0001F9D1",label:"Clients",idp:"cc",name:r=>r.name,keys:["name","mobile","whatsapp","email","cnic","loc","job","addr","notes"]},
+    {k:"accused",arr:"accused",ic:"\U0001F694",label:"Accused",idp:"a",name:r=>r.name,keys:["name","alias","cnic","father","address","contact","occupation","caseRef","role","status","sections","priorRecord","previousCrimes","generalNature","notes"]},
+    {k:"judges",arr:"bench",ic:"\U0001F468\u200D\u2696\uFE0F",label:"Judges",idp:"b",name:r=>r.name,keys:["name","designation","court","reputation","decisionTrend","temperament","strictness","notes"]},
+    {k:"lawyers",arr:"lawyers",ic:"\U0001F4BC",label:"Lawyers",idp:"l",name:r=>r.name,keys:["name","firm","barCouncil","role","practiceAreas","seniority","reputation","courtroomStyle","caseRef","notes"]},
+    {k:"firs",arr:"fir",ic:"\U0001FA7A",label:"FIRs",idp:"f",name:r=>r.title||r.firNo||r.complainant,keys:["firNo","firDate","policeStation","district","complainant","accused","sections","offence","court","nextHearing"]},
+    {k:"judgments",arr:"judge",ic:"\u2696\uFE0F",label:"Judgments",idp:"j",name:r=>r.name||r.cite,keys:["cite","name","court","year","hold","summary","url"]}
+  ];
+  function paint(){
+    sec.innerHTML=`<div class="page-head"><div><h2>\U0001F4E5 AI Intake \u2014 dump everything at once</h2><div class="sub">Paste or extract a pile of mixed information \u2014 many cases, clients, accused, judges, lawyers, FIRs and hearings together, in any format. The AI sorts it into proper records you add to the right sections in one tap.</div></div></div>
+      <div class="panel">
+        <textarea id="intakeSrc" style="width:100%;min-height:160px" placeholder="Example: Case Khan vs State, FIR 122/24 u/s 302, Sessions Court, next hearing 12 March. Accused Ali Raza, two prior thefts, on bail. Client Bilal 0300-1234567. Judge Mr. Ahmed \u2014 strict, pro-prosecution. Opposing lawyer Mr. Raza, aggressive cross-examiner\u2026"></textarea>
+        <div style="margin-top:8px"><input id="intakeFile" type="file" accept="application/pdf,image/*,.docx"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn sm" id="intakeExtract" type="button">\U0001F4C4 Extract from file</button>
+          <button class="btn primary" id="intakeRun" type="button">\U0001F916 Analyse &amp; extract</button>
+        </div>
+        <div class="hint" id="intakeHint" style="margin-top:8px">Uses your AI provider (\U0001F511). Nothing is saved until you tap Add.</div>
+      </div>
+      <div id="intakeResults"></div>`;
+    document.getElementById("intakeExtract").onclick=extract;
+    document.getElementById("intakeRun").onclick=run;
+  }
+  async function extract(){
+    const f=document.getElementById("intakeFile").files[0]; if(!f){toast("Choose a file");return;}
+    const b=document.getElementById("intakeExtract"),o=b.textContent;b.disabled=true;b.textContent="Extracting\u2026";
+    try{const t=await extractFileText(f,x=>b.textContent=x);if(t){const el=document.getElementById("intakeSrc");el.value=(el.value.trim()?el.value.trim()+"\n\n":"")+t;toast("Text extracted");}else toast("No text found");}
+    catch(e){toast("Extract failed");}
+    b.disabled=false;b.textContent=o;
+  }
+  function buildPrompt(src){
+    const spec=TYPES.map(t=>'"'+t.k+'": [ { '+t.keys.map(k=>'"'+k+'": ""').join(", ")+' } ]').join(",\n");
+    return "You are a Pakistani legal assistant. Read the messy notes below and extract EVERY distinct record into structured JSON. There may be many of each type \u2014 create a separate object for each case, client, accused person, judge, lawyer, FIR and judgment you can identify. Infer obvious links (e.g. put the related case title into an accused's or lawyer's caseRef). Use \"\" for unknown fields and NEVER invent facts. Dates as YYYY-MM-DD where possible.\nReturn ONLY valid JSON with exactly these arrays (include all keys; use [] when a type is absent):\n{\n"+spec+"\n}\nNOTES:\n"+src.slice(0,16000);
+  }
+  async function run(){
+    if(!state.aikey){toast("Add your AI key (\U0001F511)");return;}
+    const src=(document.getElementById("intakeSrc").value||"").trim();
+    if(src.length<10){toast("Paste some information first");return;}
+    const btn=document.getElementById("intakeRun"),o=btn.textContent;btn.disabled=true;btn.textContent="Analysing\u2026";
+    try{
+      const j=parseJSON(await geminiCall(buildPrompt(src),true))||{};
+      found={};let total=0;
+      TYPES.forEach(t=>{const a=Array.isArray(j[t.k])?j[t.k]:[];found[t.k]=a.filter(x=>x&&(t.name(x)||"").toString().trim()).map((x,i)=>Object.assign({},x,{_sel:true,_i:i}));total+=found[t.k].length;});
+      renderResults(total);
+    }catch(e){toast("AI error: "+e.message);}
+    btn.disabled=false;btn.textContent=o;
+  }
+  function renderResults(total){
+    const box=document.getElementById("intakeResults");
+    if(!total){box.innerHTML='<div class="empty"><h3>Nothing found</h3><p>Add more detail and try again, or check your AI key (\U0001F511).</p></div>';return;}
+    let html='<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><b>Found '+total+' record'+(total>1?"s":"")+" \u2014 untick anything you don't want, then add.</b><button class=\"btn primary\" id=\"intakeAdd\">\u2795 Add all selected</button></div></div>";
+    TYPES.forEach(t=>{
+      const rows=found[t.k]; if(!rows.length)return;
+      html+='<div class="panel"><h3>'+t.ic+" "+t.label+' <span style="color:var(--ink-soft);font-weight:400">('+rows.length+")</span></h3>";
+      rows.forEach(r=>{
+        const nm=esc((t.name(r)||"(unnamed)").toString());
+        const sub=t.keys.slice(1,5).map(k=>r[k]?esc(String(r[k])):"").filter(Boolean).join(" \u00b7 ");
+        html+='<label class="intake-row"><input type="checkbox" data-t="'+t.k+'" data-i="'+r._i+'" '+(r._sel?"checked":"")+'><span><b>'+nm+"</b>"+(sub?'<span class="meta"> '+sub+"</span>":"")+"</span></label>";
+      });
+      html+="</div>";
+    });
+    box.innerHTML=html;
+    box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{const rec=found[cb.dataset.t].find(x=>x._i===+cb.dataset.i);if(rec)rec._sel=cb.checked;});
+    document.getElementById("intakeAdd").onclick=addAll;
+  }
+  function addAll(){
+    if(typeof canSave==="function"&&!canSave()){if(typeof openSub==="function")openSub();return;}
+    const summary=[]; const caseIndex={};
+    TYPES.forEach(t=>{
+      const sel=found[t.k].filter(r=>r._sel); if(!sel.length)return;
+      const arr=state[t.arr]=state[t.arr]||[];
+      sel.forEach(r=>{
+        const obj={id:t.idp+Date.now()+Math.floor(Math.random()*1000)};
+        t.keys.forEach(k=>{if(r[k]!=null&&String(r[k]).trim()!=="")obj[k]=String(r[k]).trim();});
+        if(t.k==="cases"){obj.status=obj.status||"Active";if(obj.title)caseIndex[obj.title.toLowerCase()]=obj.id;}
+        if(t.k==="clients"){obj.tags=[];}
+        if(t.k==="firs"){obj.title=obj.title||((obj.complainant?obj.complainant+" \u2014 ":"")+(obj.sections||obj.offence||obj.firNo||"FIR"));obj.savedAt=new Date().toISOString();}
+        if((t.k==="accused"||t.k==="lawyers")&&r.caseRef){const cid=caseIndex[String(r.caseRef).toLowerCase()];if(cid)obj._links=["client:"+cid];}
+        arr.unshift(obj);
+      });
+      DB.set(t.arr,arr);
+      summary.push(sel.length+" "+t.label.toLowerCase());
+    });
+    if(typeof renderAll==="function")renderAll();
+    found=null;
+    const rb=document.getElementById("intakeResults");if(rb)rb.innerHTML="";
+    const sb=document.getElementById("intakeSrc");if(sb)sb.value="";
+    toast(summary.length?("Added "+summary.join(", ")):"Nothing selected");
+  }
+  paint();
+  document.addEventListener("click",e=>{if(e.target.closest('button[data-view="'+V+'"]'))setTimeout(()=>{if(!found)paint();},30);});
 })();
 
 </script>
