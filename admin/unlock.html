@@ -1,0 +1,121 @@
+<!-- admin-unlock.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Generate Unlock Codes</title>
+  <style>
+    body { font-family: system-ui; max-width: 600px; margin: 40px auto; padding: 20px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: 500; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .code-box { background: #f0f0f0; padding: 12px; border-radius: 6px; font-family: monospace; margin-top: 10px; }
+    .success { color: green; margin-top: 10px; }
+    .error { color: red; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>🔐 Generate Unlock Codes</h1>
+  
+  <div class="form-group">
+    <label>Reference Code (from user)</label>
+    <input type="text" id="refCode" placeholder="e.g., WK-000001">
+  </div>
+
+  <div class="form-group">
+    <label>User Email</label>
+    <input type="email" id="userEmail" placeholder="user@example.com">
+  </div>
+
+  <div class="form-group">
+    <label>Subscription Plan</label>
+    <select id="planSelect" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+      <option value="1m">1 Month</option>
+      <option value="6m">6 Months</option>
+      <option value="12m">1 Year (future)</option>
+    </select>
+  </div>
+
+  <button onclick="generateUnlock()">Generate & Copy Code</button>
+
+  <div id="result"></div>
+
+  <hr style="margin: 30px 0;">
+
+  <h3>📤 Send to User</h3>
+  <div class="form-group">
+    <label>Message Template (copy to WhatsApp/Email)</label>
+    <textarea id="message" rows="6" readonly></textarea>
+    <button onclick="copyMessage()" style="margin-top: 10px; width: 100%;">Copy Message</button>
+  </div>
+
+  <script>
+    function generateUnlock() {
+      const refCode = document.getElementById('refCode').value.trim();
+      const userEmail = document.getElementById('userEmail').value.trim();
+      const plan = document.getElementById('planSelect').value;
+      const resultDiv = document.getElementById('result');
+
+      if (!refCode || !userEmail) {
+        resultDiv.innerHTML = '<div class="error">❌ Please fill in all fields</div>';
+        return;
+      }
+
+      // Generate unlock code (8 alphanumeric)
+      const unlockCode = generateRandomCode(8);
+      const expiryDate = calculateExpiry(plan);
+      
+      // Store in localStorage (or your backend database)
+      const unlock = {
+        code: unlockCode,
+        refCode: refCode,
+        email: userEmail,
+        plan: plan,
+        createdAt: new Date().toISOString(),
+        expiryDate: expiryDate
+      };
+
+      // Save to localStorage (replace with backend API call)
+      let unlocks = JSON.parse(localStorage.getItem('unlocks') || '[]');
+      unlocks.push(unlock);
+      localStorage.setItem('unlocks', JSON.stringify(unlocks));
+
+      // Show generated code
+      resultDiv.innerHTML = `
+        <div class="success">
+          <strong>✅ Code Generated</strong>
+          <div class="code-box">${unlockCode}</div>
+          <p style="font-size: 12px; margin-top: 8px;">
+            Plan: <strong>${plan}</strong><br>
+            Expires: <strong>${expiryDate}</strong>
+          </p>
+        </div>
+      `;
+
+      // Prepare message template
+      const messageText = `Hi there! 👋\n\nYour payment has been received. Here's your unlock code:\n\n${unlockCode}\n\nPaste this in the app to activate your subscription (${plan} plan).\n\nThank you!`;
+      document.getElementById('message').value = messageText;
+    }
+
+    function generateRandomCode(length) {
+      return Math.random().toString(36).substring(2, 2 + length).toUpperCase();
+    }
+
+    function calculateExpiry(plan) {
+      const date = new Date();
+      if (plan === '1m') date.setMonth(date.getMonth() + 1);
+      if (plan === '6m') date.setMonth(date.getMonth() + 6);
+      if (plan === '12m') date.setFullYear(date.getFullYear() + 1);
+      return date.toLocaleDateString();
+    }
+
+    function copyMessage() {
+      const message = document.getElementById('message').value;
+      navigator.clipboard.writeText(message).then(() => {
+        alert('Message copied! Paste it in WhatsApp or email.');
+      });
+    }
+  </script>
+</body>
+</html>
