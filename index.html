@@ -993,175 +993,15 @@ create policy "rw" on vault for all using (true) with check (true);</code></li>
   <div class="modal-foot"><button class="btn sm" onclick="if($('jId').value)exportPdf('judge',$('jId').value);else toast('Save first')">PDF</button><button class="btn sm" onclick="if($('jId').value)exportDoc('judge',$('jId').value);else toast('Save first')">Word</button><button class="btn" id="judgeCancel">Cancel</button><button class="btn primary" id="judgeSave">Save judgment</button></div>
 </div></div>
 
-<!-- ============ SUBSCRIPTION MODAL ============ -->
-<div class="overlay" id="subOverlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Subscribe to Save Your Work</h3>
-      <button class="icon-btn" id="subClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px">
-        Free tier allows full exploration. <b>Saving cases, judgments, profiles, backups & AI history</b> requires an active subscription.
-        <span id="subExpiryInfo" class="hidden" style="display:block;margin-top:8px;color:var(--red);font-weight:600"></span>
-      </p>
-
-      <div class="plans" id="planPick">
-        <div class="plan on" data-plan="1m">
-          <div class="price">₨250</div>
-          <div class="per">per month</div>
-          <div class="save" style="color:var(--green)">Auto-renews • Cancel anytime</div>
-        </div>
-        <div class="plan" data-plan="6m">
-          <span class="badge">Best value</span>
-          <div class="price">₨1,000</div>
-          <div class="per">for 6 months</div>
-          <div class="save">Save ₨500</div>
-        </div>
-      </div>
-
-      <div class="info-card" style="margin-bottom:12px">
-        Tap a payment method → copy number → pay via your banking app.<br>
-        <b>Include your reference code</b> in the payment note.
-      </div>
-
-      <div class="pay-methods" id="payMethods"></div>
-
-      <div class="ref-box">
-        Your reference code <b id="refCode">WK-000000</b><br>
-        <span style="font-size:12px">Write this in the payment note for fast unlocking.</span>
-      </div>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn wa" style="flex:1" id="waBtn">📱 Send proof on WhatsApp</button>
-        <button class="btn" style="flex:1" id="emailReqBtn">✉️ Request by email</button>
-      </div>
-
-      <div class="divider">After we confirm payment</div>
-
-      <div class="field">
-        <label>Enter unlock code (sent within 24h)</label>
-        <input id="unlockInput" placeholder="Paste unlock code here" style="font-family:'Spline Sans Mono',monospace;text-align:center;font-size:15px">
-      </div>
-      <button class="btn primary wide" id="unlockBtn">Unlock Saving</button>
-
-      <!-- Grok AI Premium -->
-      <div class="info-card" style="margin-top:16px;background:var(--brass-soft);border-color:var(--brass)">
-        <b>✨ Grok (xAI) Available for Premium Users</b><br>
-        Unlock stronger legal reasoning with Grok alongside Gemini, OpenAI & DeepSeek.
-      </div>
-
-      <div class="note" style="margin-top:12px">
-        Questions? Email <b id="payEmail">support@trendcatcher-kech.app</b><br>
-        <span style="font-size:12px;color:var(--ink-faint)">Auto-renews. Reminders sent 7 days & 1 day before expiry.</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ REMINDER / EXPIRY SMALL BOX ============ -->
-<div class="overlay" id="remOverlay" style="display:none">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-head">
-      <h3 id="remTitle">Subscription & Reminders</h3>
-      <button class="icon-btn" id="remClose" style="border-color:var(--line);background:var(--sand);color:var(--ink)">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="remDaysLeft" style="font-size:28px;font-weight:700;text-align:center;margin:20px 0;color:var(--green);"></div>
-      <div id="remStatus" style="text-align:center;margin-bottom:20px;font-size:14px;"></div>
-      
-      <div class="info-card">
-        You will receive automatic reminders 7 days and 1 day before expiry.
-      </div>
-
-      <button class="btn primary wide" id="remRenewBtn" style="margin-top:16px">Renew Subscription Now</button>
-    </div>
-  </div>
-</div>
-
-// === Subscription + Reminder Logic ===
-function updateSubUI() {
-  const info = document.getElementById('subExpiryInfo');
-  if (!info) return;
-
-  if (state?.subscription?.expires) {
-    const expDate = new Date(state.subscription.expires);
-    const daysLeft = Math.ceil((expDate - Date.now()) / 86400000);
-
-    if (daysLeft <= 7 && daysLeft > 0) {
-      info.classList.remove('hidden');
-      info.innerHTML = `⚠️ Expires in <b>${daysLeft}</b> day${daysLeft > 1 ? 's' : ''}. Renew now.`;
-    } else if (daysLeft <= 0) {
-      info.classList.remove('hidden');
-      info.innerHTML = `❌ Subscription expired. Saving is locked.`;
-    } else {
-      info.classList.add('hidden');
-    }
-  } else {
-    info.classList.add('hidden');
-  }
-}
-
-// Show Reminder Box (small modal with days left)
-function showReminderBox() {
-  const overlay = document.getElementById('remOverlay');
-  const daysEl = document.getElementById('remDaysLeft');
-  const statusEl = document.getElementById('remStatus');
-
-  if (!state?.subscription?.expires) {
-    daysEl.textContent = "—";
-    statusEl.innerHTML = "No active subscription found.";
-    overlay.style.display = 'flex';
-    return;
-  }
-
-  const expDate = new Date(state.subscription.expires);
-  const daysLeft = Math.ceil((expDate - Date.now()) / 86400000);
-
-  daysEl.textContent = daysLeft > 0 ? `${daysLeft} days` : "Expired";
-  daysEl.style.color = daysLeft <= 7 ? 'var(--red)' : 'var(--green)';
-
-  statusEl.innerHTML = daysLeft > 0 
-    ? `Your subscription expires on <b>${expDate.toLocaleDateString()}</b>` 
-    : `Subscription has expired.`;
-
-  overlay.style.display = 'flex';
-}
-
-// Close Reminder Box
-document.getElementById('remClose').addEventListener('click', () => {
-  document.getElementById('remOverlay').style.display = 'none';
-});
-
-// Renew button in reminder box
-document.getElementById('remRenewBtn').addEventListener('click', () => {
-  document.getElementById('remOverlay').style.display = 'none';
-  // Open subscription modal
-  document.getElementById('subOverlay').classList.add('on'); // or your existing open logic
-});
-
-// Initialize everything
-function initSubscriptionAndReminder() {
-  updateSubUI();
-
-  // Attach to unlock button
-  const unlockBtn = document.getElementById('unlockBtn');
-  if (unlockBtn) unlockBtn.addEventListener('click', () => setTimeout(updateSubUI, 700));
-
-  // Attach to subscribe button
-  const subscribeBtn = document.getElementById('subscribeBtn');
-  if (subscribeBtn) subscribeBtn.addEventListener('click', () => setTimeout(updateSubUI, 300));
-
-  // Auto check on load
-  setTimeout(updateSubUI, 1200);
-}
-
-// Run on page load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initSubscriptionAndReminder);
-} else {
-  initSubscriptionAndReminder();
-}
+PAK LAWYER'S AI-NOTEBOOK · PAKISTAN · LEGAL ·
+Pak Lawyer's AI-Notebook
+Every hearing, every file, in one place.
+ by TrendCatcher-Kech
+Email or phone *
+Password *
+ ·
+ // === Subscription + Reminder Logic === function updateSubUI() { const info = document.getElementById('subExpiryInfo'); if (!info) return; if (state?.subscription?.expires) { const expDate = new Date(state.subscription.expires); const daysLeft = Math.ceil((expDate - Date.now()) / 86400000); if (daysLeft <= 7 && daysLeft > 0) { info.classList.remove('hidden'); info.innerHTML = `⚠️ Expires in ${daysLeft} day${daysLeft > 1 ? 's' : ''}. Renew now.`; } else if (daysLeft <= 0) { info.classList.remove('hidden'); info.innerHTML = `❌ Subscription expired. Saving is locked.`; } else { info.classList.add('hidden'); } } else { info.classList.add('hidden'); } } // Show Reminder Box (small modal with days left) function showReminderBox() { const overlay = document.getElementById('remOverlay'); const daysEl = document.getElementById('remDaysLeft'); const statusEl = document.getElementById('remStatus'); if (!state?.subscription?.expires) { daysEl.textContent = "—"; statusEl.innerHTML = "No active subscription found."; overlay.style.display = 'flex'; return; } const expDate = new Date(state.subscription.expires); const daysLeft = Math.ceil((expDate - Date.now()) / 86400000); daysEl.textContent = daysLeft > 0 ? `${daysLeft} days` : "Expired"; daysEl.style.color = daysLeft <= 7 ? 'var(--red)' : 'var(--green)'; statusEl.innerHTML = daysLeft > 0 ? `Your subscription expires on ${expDate.toLocaleDateString()}` : `Subscription has expired.`; overlay.style.display = 'flex'; } // Close Reminder Box document.getElementById('remClose').addEventListener('click', () => { document.getElementById('remOverlay').style.display = 'none'; }); // Renew button in reminder box document.getElementById('remRenewBtn').addEventListener('click', () => { document.getElementById('remOverlay').style.display = 'none'; // Open subscription modal document.getElementById('subOverlay').classList.add('on'); // or your existing open logic }); // Initialize everything function initSubscriptionAndReminder() { updateSubUI(); // Attach to unlock button const unlockBtn = document.getElementById('unlockBtn'); if (unlockBtn) unlockBtn.addEventListener('click', () => setTimeout(updateSubUI, 700)); // Attach to subscribe button const subscribeBtn = document.getElementById('subscribeBtn'); if (subscribeBtn) subscribeBtn.addEventListener('click', () => setTimeout(updateSubUI, 300)); // Auto check on load setTimeout(updateSubUI, 1200); } // Run on page load if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initSubscriptionAndReminder); } else { initSubscriptionAndReminder(); }
+💡 Idea & build by Nazeer Baloch
 
 <!-- ============ PERSONAL MODAL ============ -->
 
@@ -3742,5 +3582,85 @@ ${txt.slice(0,6000)}`;
 
 </script>
 <div class="credit-foot"><span>💡 Idea &amp; build by <b>Nazeer Baloch</b></span></div>
+   <script>
+// === Subscription + Reminder Logic ===
+function updateSubUI() {
+  const info = document.getElementById('subExpiryInfo');
+  if (!info) return;
+
+  if (state?.subscription?.expires) {
+    const expDate = new Date(state.subscription.expires);
+    const daysLeft = Math.ceil((expDate - Date.now()) / 86400000);
+
+    if (daysLeft <= 7 && daysLeft > 0) {
+      info.classList.remove('hidden');
+      info.innerHTML = `⚠️ Expires in <b>${daysLeft}</b> day${daysLeft > 1 ? 's' : ''}. Renew now.`;
+    } else if (daysLeft <= 0) {
+      info.classList.remove('hidden');
+      info.innerHTML = `❌ Subscription expired. Saving is locked.`;
+    } else {
+      info.classList.add('hidden');
+    }
+  } else {
+    info.classList.add('hidden');
+  }
+}
+
+function showReminderBox() {
+  const overlay = document.getElementById('remOverlay');
+  const daysEl = document.getElementById('remDaysLeft');
+  const statusEl = document.getElementById('remStatus');
+
+  if (!state?.subscription?.expires) {
+    daysEl.textContent = "—";
+    daysEl.style.color = "var(--ink-soft)";
+    statusEl.innerHTML = "No active subscription found.";
+    overlay.style.display = 'flex';
+    return;
+  }
+
+  const expDate = new Date(state.subscription.expires);
+  const daysLeft = Math.ceil((expDate - Date.now()) / 86400000);
+
+  daysEl.textContent = daysLeft > 0 ? `${daysLeft}` : "0";
+  daysEl.style.color = daysLeft <= 7 ? 'var(--red)' : 'var(--green)';
+  statusEl.innerHTML = daysLeft > 0 
+    ? `days remaining until expiry<br><small>${expDate.toLocaleDateString()}</small>` 
+    : `Subscription has expired.`;
+  
+  overlay.style.display = 'flex';
+}
+
+// Close Reminder
+document.getElementById('remClose').addEventListener('click', () => {
+  document.getElementById('remOverlay').style.display = 'none';
+});
+
+// Renew from reminder box
+document.getElementById('remRenewBtn').addEventListener('click', () => {
+  document.getElementById('remOverlay').style.display = 'none';
+  document.getElementById('subOverlay').classList.add('on');
+});
+
+// Initialize
+function initSubscriptionReminder() {
+  updateSubUI();
+
+  // Attach listeners
+  const unlockBtn = document.getElementById('unlockBtn');
+  if (unlockBtn) unlockBtn.addEventListener('click', () => setTimeout(updateSubUI, 700));
+
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  if (subscribeBtn) subscribeBtn.addEventListener('click', () => setTimeout(updateSubUI, 300));
+
+  setTimeout(updateSubUI, 1000);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSubscriptionReminder);
+} else {
+  initSubscriptionReminder();
+}
+</script>
 </body>
 </html>
